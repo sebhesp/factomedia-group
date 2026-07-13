@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Bell, CircleGauge, FilePlus2, Newspaper, Radio, UserRound } from "lucide-react";
+import { BarChart3, Bell, CircleGauge, FilePlus2, Newspaper, Radio, SearchCheck, UserRound } from "lucide-react";
 import { CommandPalette } from "@/components/command-palette";
 import { cn } from "@/lib/utils";
 import { roleLabels, useDemoRole, type DemoRole } from "@/lib/demo-role";
 
 const links = [
   { href: "/mi-dia", label: "Mi mesa", icon: CircleGauge },
+  { href: "/buscar-noticia", label: "Buscar noticia", icon: SearchCheck },
   { href: "/desk/noticias/nueva", label: "Capturar", icon: FilePlus2 },
   { href: "/redaccion", label: "Ahora", icon: Radio },
   { href: "/distribucion", label: "Distribución", icon: BarChart3 },
