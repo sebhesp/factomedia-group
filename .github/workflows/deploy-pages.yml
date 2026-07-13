@@ -1,4 +1,4 @@
-name: Deploy Factomedia to GitHub Pages
+name: Build and publish Factomedia
 
 on:
   push:
@@ -6,58 +6,49 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: factomedia-pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     steps:
-      - name: Checkout
+      - name: 1. Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: 2. Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+      - name: 3. Install dependencies
+        run: npm install --no-audit --no-fund
 
-      - name: Validate
+      - name: 4. Validate code
         run: |
           npm run typecheck
           npm run lint
           npm test
 
-      - name: Build static site
+      - name: 5. Build static website
         env:
           GITHUB_ACTIONS: "true"
-        run: npm run build
+          CI: "true"
+        run: |
+          npm run build
+          test -f out/index.html
+          touch out/.nojekyll
 
-      - name: Disable Jekyll
-        run: touch out/.nojekyll
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: 6. Publish gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./out
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: gh-pages
+          force_orphan: true
+          enable_jekyll: false
