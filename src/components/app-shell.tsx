@@ -16,13 +16,21 @@ import {
   SearchCheck,
   UserRound,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { CommandPalette } from "@/components/command-palette";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { cn } from "@/lib/utils";
 import { roleLabels, useDemoRole, type DemoRole } from "@/lib/demo-role";
 
-const links = [
+type NavigationLink = {
+  href: string;
+  label: string;
+  mobileLabel?: string;
+  icon: LucideIcon;
+};
+
+const links: readonly NavigationLink[] = [
   { href: "/mi-dia", label: "Mi mesa", icon: CircleGauge },
   { href: "/buscar-noticia", label: "Buscar noticia", mobileLabel: "Buscar", icon: SearchCheck },
   { href: "/desk/noticias/nueva", label: "Capturar", icon: FilePlus2 },
@@ -30,7 +38,7 @@ const links = [
   { href: "/distribucion", label: "Distribución", icon: BarChart3 },
   { href: "/aprendizajes", label: "Aprendizajes", icon: BrainCircuit },
   { href: "/", label: "Portada", icon: Newspaper },
-] as const;
+];
 
 const mobilePrimaryLinks = links.slice(0, 4);
 const mobileSecondaryLinks = links.slice(4);
