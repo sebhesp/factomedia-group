@@ -90,6 +90,8 @@ function titleFrom(row: PipelineRow, draft: DraftRelation | null) {
 export async function loadInstagramEngineItems() {
   const client = createClient();
   if (!client) return { mode: "demo" as const, items: [] as InstagramEngineItem[], error: null };
+  const { data: sessionData } = await client.auth.getSession();
+  if (!sessionData.session) return { mode: "demo" as const, items: [] as InstagramEngineItem[], error: "not_authenticated" };
 
   const { data, error } = await client
     .from("instagram_media")
