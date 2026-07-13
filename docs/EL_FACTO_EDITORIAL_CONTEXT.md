@@ -52,6 +52,45 @@ La voz de las notas debe ser:
 - explícita respecto a la incertidumbre;
 - cuidadosa al separar hechos, declaraciones, interpretación y opinión.
 
+## Modelo de confianza editorial: Instagram como origen revisado
+
+Los Reels publicados por la cuenta oficial `@elfactonoticias` se consideran un **insumo editorial primario confiable**, porque ya pasaron por el proceso interno de revisión antes de publicarse en Instagram.
+
+Esto significa que Factomedia puede:
+
+- transcribir el Reel;
+- usar el caption como contexto editorial aprobado;
+- convertir el contenido en una Nota Maestra;
+- conservar la firma o presentador correcto;
+- preparar título, bajada, cuerpo, imagen y SEO;
+- enviar la nota directamente a revisión final sin exigir una segunda verificación completa desde cero.
+
+El sistema no debe presentar el Reel como una fuente externa neutral. Debe identificarlo como:
+
+> Origen editorial revisado por El Facto.
+
+### Función de las fuentes externas
+
+Las fuentes externas sirven principalmente para:
+
+- ampliar contexto;
+- añadir antecedentes;
+- detectar contradicciones o cambios posteriores;
+- complementar cifras, documentos o citas;
+- registrar quién publicó antes o después;
+- comparar la velocidad informativa de El Facto;
+- identificar oportunidades de actualización.
+
+La ausencia de fuentes externas **no bloquea automáticamente la creación de la nota**.
+
+Sí puede bloquear la publicación cuando:
+
+- el propio Reel presenta algo como no confirmado;
+- la nota generada añade un dato material que no aparece en el Reel ni en el caption;
+- existe una acusación, cifra de víctimas, riesgo jurídico o acontecimiento cambiante;
+- una fuente posterior contradice materialmente el contenido original;
+- la editora solicita corroboración adicional.
+
 ## Reglas de redacción
 
 1. Abrir con el hecho principal.
@@ -75,7 +114,7 @@ Se genera desde:
 - caption original;
 - texto visible en pantalla;
 - transcripción;
-- fuentes adicionales aprobadas.
+- fuentes adicionales cuando aporten contexto, actualización o contraste.
 
 Debe producir:
 
@@ -85,8 +124,11 @@ Debe producir:
 - cuerpo;
 - contexto;
 - autor o presentador cuando corresponda;
-- fuentes;
-- estado de verificación;
+- origen editorial;
+- fuentes complementarias;
+- hora de publicación en Instagram;
+- comparación temporal con otras publicaciones;
+- estado de revisión;
 - imagen de portada propuesta;
 - metadatos SEO.
 
@@ -129,12 +171,13 @@ La IA no puede:
 
 Métrica principal:
 
-> Porcentaje de Reels que se convierten en notas publicables, con fuentes suficientes y sin bloqueo editorial.
+> Porcentaje de Reels que se convierten en notas publicables, sin rehacer la revisión editorial ya realizada en Instagram.
 
 Guardrails:
 
 - tasa de correcciones;
-- afirmaciones no respaldadas detectadas después de publicar;
+- datos nuevos añadidos por IA sin respaldo;
 - tiempo de revisión humana;
 - porcentaje de notas que conservan correctamente autoría y atribución;
-- notas descartadas por mala interpretación del video.
+- notas descartadas por mala interpretación del video;
+- diferencia entre la hora de publicación de El Facto y la primera publicación comparable detectada.
