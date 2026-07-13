@@ -1,6 +1,7 @@
 name: Restore Factomedia repository
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -21,6 +22,7 @@ jobs:
         shell: bash
         run: |
           cat .bootstrap/part-* | base64 --decode > /tmp/factomedia.bundle
+          test -s /tmp/factomedia.bundle
           git bundle verify /tmp/factomedia.bundle
 
       - name: Restore complete repository history
