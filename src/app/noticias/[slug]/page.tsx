@@ -5,6 +5,12 @@ import { Share2 } from "lucide-react";
 import { demoStories } from "@/lib/demo-data";
 import { formatDate } from "@/lib/utils";
 
+export function generateStaticParams() {
+  return demoStories
+    .filter((story) => story.status === "published")
+    .map((story) => ({ slug: story.slug }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params; const story = demoStories.find((item) => item.slug === slug && item.status === "published");
   if (!story) return { title: "Noticia no encontrada" };
