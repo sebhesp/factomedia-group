@@ -35,7 +35,7 @@ export function NewStoryForm() {
       metrics: { views: 0, readsStarted: 0, readsCompleted: 0, shares: 0 }, demo: true,
     };
     saveLocalStory(story);
-    router.push(`/desk/noticias/${id}`);
+    router.push(`/desk/noticias/sala?id=${id}`);
   }
 
   return (
