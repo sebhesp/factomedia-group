@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CircleGauge, FilePlus2, Newspaper, Radio, UserRound } from "lucide-react";
+import { BarChart3, Bell, CircleGauge, FilePlus2, Newspaper, Radio, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { roleLabels, useDemoRole, type DemoRole } from "@/lib/demo-role";
 
@@ -10,6 +10,7 @@ const links = [
   { href: "/mi-dia", label: "Mi día", icon: CircleGauge },
   { href: "/desk/noticias/nueva", label: "Crear noticia", icon: FilePlus2 },
   { href: "/redaccion", label: "Redacción en vivo", icon: Radio },
+  { href: "/distribucion", label: "Distribución", icon: BarChart3 },
   { href: "/", label: "Ver portada", icon: Newspaper },
 ];
 
@@ -22,7 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/mi-dia" className="brand brand-desk"><span className="brand-mark">F</span><span>FactoDesk</span></Link>
         <nav className="side-nav">
           {links.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} className={cn("side-link", pathname === href && "active")}>
+            <Link key={href} href={href} className={cn("side-link", (pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))) && "active")}>
               <Icon size={18} />{label}
             </Link>
           ))}
@@ -33,7 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="desk-header"><div><span className="mobile-brand">FactoDesk</span></div><button className="icon-button" aria-label="Notificaciones"><Bell size={19} /><span className="notification-dot" /></button></header>
         <main className="desk-content">{children}</main>
         <nav className="mobile-nav">
-          {links.slice(0, 3).map(({ href, label, icon: Icon }) => <Link key={href} href={href} className={cn(pathname === href && "active")}><Icon size={20} /><span>{label}</span></Link>)}
+          {links.slice(0, 4).map(({ href, label, icon: Icon }) => <Link key={href} href={href} className={cn((pathname === href || pathname.startsWith(`${href}/`)) && "active")}><Icon size={20} /><span>{label}</span></Link>)}
         </nav>
       </div>
     </div>
