@@ -2,6 +2,30 @@ import { createClient } from "@/lib/supabase/client";
 import type { Story, StoryStatus, VerificationStatus } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
+type ExternalMatch = {
+  id: string;
+  source_name: string;
+  source_url: string;
+  relation: string;
+};
+
+type PipelineEvent = {
+  id: string;
+  event_type: string;
+  actor_type: string;
+  actor_id: string | null;
+  occurred_at: string;
+  payload: Record<string, unknown> | null;
+};
+
+type MediaRelation = {
+  permalink: string;
+  published_at: string;
+  presenter_name: string | null;
+  instagram_external_matches: ExternalMatch[] | null;
+  instagram_pipeline_events: PipelineEvent[] | null;
+};
+
 type DraftRow = {
   id: string;
   media_id: string;
@@ -19,29 +43,7 @@ type DraftRow = {
   created_at: string;
   updated_at: string;
   published_at: string | null;
-  instagram_media: {
-    permalink: string;
-    published_at: string;
-    presenter_name: string | null;
-  } | Array<{
-    permalink: string;
-    published_at: string;
-    presenter_name: string | null;
-  }>;
-  instagram_external_matches: Array<{
-    id: string;
-    source_name: string;
-    source_url: string;
-    relation: string;
-  }> | null;
-  instagram_pipeline_events: Array<{
-    id: string;
-    event_type: string;
-    actor_type: string;
-    actor_id: string | null;
-    occurred_at: string;
-    payload: Record<string, unknown> | null;
-  }> | null;
+  instagram_media: MediaRelation | MediaRelation[];
 };
 
 function firstRelation<T>(value: T | T[]) {
@@ -86,9 +88,13 @@ export async function loadInstagramStory(storyId: string) {
       created_at,
       updated_at,
       published_at,
-      instagram_media!inner(permalink,published_at,presenter_name),
-      instagram_external_matches(id,source_name,source_url,relation),
-      instagram_pipeline_events(id,event_type,actor_type,actor_id,occurred_at,payload)
+      instagram_media!inner(
+        permalink,
+        published_at,
+        presenter_name,
+        instagram_external_matches(id,source_name,source_url,relation),
+        instagram_pipeline_events(id,event_type,actor_type,actor_id,occurred_at,payload)
+      )
     `)
     .eq("media_id", storyId)
     .maybeSingle();
@@ -96,7 +102,8 @@ export async function loadInstagramStory(storyId: string) {
   if (error || !data) return null;
   const row = data as unknown as DraftRow;
   const media = firstRelation(row.instagram_media);
-  const externalSources = row.instagram_external_matches ?? [];
+  if (!media) return null;
+  const externalSources = media.instagram_external_matches ?? [];
   const storedSources = row.sources ?? [];
   const sourceRows = [
     {
@@ -106,13 +113,15 @@ export async function loadInstagramStory(storyId: string) {
       type: "link" as const,
       note: "Origen editorial revisado",
     },
-    ...storedSources.map((source, index) => ({
-      id: `stored-${index}`,
-      name: source.name ?? "Fuente registrada",
-      url: source.url,
-      type: "link" as const,
-      note: source.type,
-    })),
+    ...storedSources
+      .filter((source) => source.url !== media.permalink)
+      .map((source, index) => ({
+        id: `stored-${index}`,
+        name: source.name ?? "Fuente registrada",
+        url: source.url,
+        type: "link" as const,
+        note: source.type,
+      })),
     ...externalSources.map((source) => ({
       id: source.id,
       name: source.source_name,
@@ -143,7 +152,7 @@ export async function loadInstagramStory(storyId: string) {
     updatedAt: row.updated_at,
     publishedAt: row.published_at ?? undefined,
     corrections: [],
-    events: (row.instagram_pipeline_events ?? []).map((event) => ({
+    events: (media.instagram_pipeline_events ?? []).map((event) => ({
       id: event.id,
       type: event.event_type.replaceAll("_", " "),
       actor: event.actor_type === "user" ? "Equipo editorial" : event.actor_type === "ai" ? "IA editorial" : "Sistema",
@@ -175,7 +184,6 @@ export async function reviewInstagramStory(
   };
 
   const { data, error } = await client.functions.invoke("instagram-review", {
-    method: "POST",
     body: { media_id: story.id, action, comment, patch },
   });
 
