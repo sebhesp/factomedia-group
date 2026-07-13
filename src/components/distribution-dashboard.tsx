@@ -15,7 +15,6 @@ import {
   RefreshCw,
   Search,
   Send,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 import { demoSocialAlerts } from "@/lib/social-demo-data";
