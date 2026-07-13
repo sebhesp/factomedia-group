@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   BarChart3,
+  BrainCircuit,
   FilePlus2,
   Home,
   Newspaper,
@@ -13,6 +14,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { trackProductEvent } from "@/lib/product-intelligence";
 
 const commands = [
   { label: "Ir a Mi mesa", hint: "Inicio", href: "/mi-dia", icon: Home },
@@ -20,6 +22,7 @@ const commands = [
   { label: "Crear una noticia", hint: "Captura guiada", href: "/desk/noticias/nueva", icon: FilePlus2 },
   { label: "Abrir redacción en vivo", hint: "Factomedia Ahora", href: "/redaccion", icon: Radio },
   { label: "Revisar distribución", hint: "Posts y métricas", href: "/distribucion", icon: BarChart3 },
+  { label: "Ver aprendizajes", hint: "Métricas, feedback y experimentos", href: "/aprendizajes", icon: BrainCircuit },
   { label: "Ver portada pública", hint: "Sitio publicado", href: "/", icon: Newspaper },
 ] as const;
 
@@ -29,11 +32,20 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  function setPaletteOpen(next: boolean, source: "button" | "keyboard") {
+    setOpen(next);
+    if (next) trackProductEvent("command_palette_opened", { source });
+  }
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setOpen((current) => !current);
+        setOpen((current) => {
+          const next = !current;
+          if (next) trackProductEvent("command_palette_opened", { source: "keyboard" });
+          return next;
+        });
       }
       if (event.key === "Escape") setOpen(false);
     }
@@ -54,6 +66,7 @@ export function CommandPalette() {
   }, [query]);
 
   function execute(href: string) {
+    trackProductEvent("command_executed", { destination: href, had_filter: Boolean(query.trim()) });
     setOpen(false);
     setQuery("");
     router.push(href);
@@ -61,7 +74,7 @@ export function CommandPalette() {
 
   return (
     <>
-      <button type="button" className="command-trigger" onClick={() => setOpen(true)} aria-label="Buscar o ejecutar un comando">
+      <button type="button" className="command-trigger" onClick={() => setPaletteOpen(true, "button")} aria-label="Buscar o ejecutar un comando" data-track-id="command-palette-trigger">
         <Search size={16} />
         <span>Buscar o ejecutar</span>
         <kbd>⌘ K</kbd>
@@ -78,7 +91,7 @@ export function CommandPalette() {
             <div className="command-context"><Sparkles size={15} /><span>Las acciones frecuentes están disponibles sin memorizar rutas.</span></div>
             <div className="command-list">
               {filtered.map(({ label, hint, href, icon: Icon }) => (
-                <button type="button" key={href} onClick={() => execute(href)}>
+                <button type="button" key={href} onClick={() => execute(href)} data-track-id={`command-${href.replaceAll("/", "-") || "home"}`}>
                   <span><Icon size={17} /></span>
                   <div><strong>{label}</strong><small>{hint}</small></div>
                   <kbd>↵</kbd>
