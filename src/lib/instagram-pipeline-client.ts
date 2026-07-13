@@ -144,7 +144,7 @@ export async function requestInstagramSync() {
   if (!client) return { ok: false as const, reason: "not_configured" as const };
   const { data: sessionData } = await client.auth.getSession();
   if (!sessionData.session) return { ok: false as const, reason: "not_authenticated" as const };
-  const { data, error } = await client.functions.invoke("instagram-sync", { method: "POST", body: {} });
+  const { data, error } = await client.functions.invoke("instagram-sync", { body: {} });
   if (error) return { ok: false as const, reason: "sync_failed" as const, error: error.message };
   return { ok: true as const, data };
 }
