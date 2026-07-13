@@ -1,0 +1,16 @@
+project_id = "factomedia-group"
+
+[functions.instagram-sync]
+verify_jwt = false
+
+[functions.instagram-process]
+verify_jwt = false
+
+[functions.instagram-compare-timing]
+verify_jwt = false
+
+[functions.instagram-pipeline-tick]
+verify_jwt = false
+
+[functions.instagram-review]
+verify_jwt = true
