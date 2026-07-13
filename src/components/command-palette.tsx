@@ -9,12 +9,14 @@ import {
   Newspaper,
   Radio,
   Search,
+  SearchCheck,
   Sparkles,
   X,
 } from "lucide-react";
 
 const commands = [
   { label: "Ir a Mi mesa", hint: "Inicio", href: "/mi-dia", icon: Home },
+  { label: "Buscar noticias recientes", hint: "Radar verificado", href: "/buscar-noticia", icon: SearchCheck },
   { label: "Crear una noticia", hint: "Captura guiada", href: "/desk/noticias/nueva", icon: FilePlus2 },
   { label: "Abrir redacción en vivo", hint: "Factomedia Ahora", href: "/redaccion", icon: Radio },
   { label: "Revisar distribución", hint: "Posts y métricas", href: "/distribucion", icon: BarChart3 },
