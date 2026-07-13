@@ -42,14 +42,7 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <button
-        type="button"
-        className="feedback-trigger"
-        onClick={openWidget}
-        data-track-event="feedback_opened"
-        data-track-id="feedback-trigger"
-        data-track-surface="global"
-      >
+      <button type="button" className="feedback-trigger" onClick={openWidget} data-track-id="feedback-trigger">
         <MessageCircle size={16} />
         <span>Dar feedback</span>
       </button>
