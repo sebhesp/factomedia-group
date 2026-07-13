@@ -119,7 +119,7 @@ function writeArray<T>(key: string, values: T[], maximum: number) {
 function sanitizeProperties(properties: ProductEventProperties = {}) {
   return Object.fromEntries(
     Object.entries(properties)
-      .filter(([key, value]) => !PROHIBITED_PROPERTY_PATTERN.test(key) && ["string", "number", "boolean"].includes(typeof value) || value === null)
+      .filter(([key, value]) => !PROHIBITED_PROPERTY_PATTERN.test(key) && (["string", "number", "boolean"].includes(typeof value) || value === null))
       .slice(0, 24)
       .map(([key, value]) => [key, typeof value === "string" ? value.slice(0, 120) : value]),
   ) as ProductEventProperties;
