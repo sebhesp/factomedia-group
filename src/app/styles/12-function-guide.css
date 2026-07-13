@@ -1,0 +1,200 @@
+.function-guide-trigger {
+  position: fixed;
+  left: max(20px, env(safe-area-inset-left));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 82;
+  min-height: 40px;
+  border: 1px solid #bfd0c4;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0 14px;
+  box-shadow: 0 14px 38px #12211824;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.function-guide-trigger:hover,
+.function-guide-trigger[aria-expanded="true"] {
+  background: var(--accent-soft);
+}
+
+.function-guide-panel {
+  position: fixed;
+  left: max(20px, env(safe-area-inset-left));
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 52px);
+  z-index: 170;
+  width: min(440px, calc(100vw - 24px));
+  max-height: min(76dvh, 640px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #d7e0d9;
+  border-radius: 18px;
+  background: #fbfaf6;
+  box-shadow: 0 30px 100px #0a100c4f;
+  padding: 18px;
+}
+
+.function-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.function-guide-header span {
+  color: var(--accent);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.function-guide-header h2 {
+  margin: 6px 0 0;
+  font: 560 27px/1.08 var(--font-serif), serif;
+}
+
+.function-guide-header button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.function-guide-header button:hover {
+  background: #ecece6;
+  color: var(--ink);
+}
+
+.function-guide-summary {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.function-guide-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.function-guide-feature {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 11px;
+  align-items: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 11px;
+}
+
+.function-guide-feature > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.function-guide-feature h3 {
+  margin: 0;
+  font: 850 10px/1.25 var(--font-sans);
+}
+
+.function-guide-feature p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.function-guide-next {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  color: var(--warning);
+}
+
+.function-guide-next > svg {
+  margin-top: 2px;
+}
+
+.function-guide-next small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .1em;
+  font-weight: 850;
+}
+
+.function-guide-next strong {
+  display: block;
+  color: var(--ink);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .function-guide-trigger {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: calc(var(--mobile-nav-height) + 12px + env(safe-area-inset-bottom));
+    min-height: 44px;
+    z-index: 76;
+  }
+
+  .function-guide-panel {
+    left: max(8px, env(safe-area-inset-left));
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(var(--mobile-nav-height) + 64px + env(safe-area-inset-bottom));
+    width: auto;
+    max-height: min(62dvh, 560px);
+    border-radius: 18px;
+    padding: 16px 14px;
+    z-index: 170;
+  }
+
+  .function-guide-header h2 {
+    font-size: 25px;
+  }
+
+  .function-guide-summary {
+    font-size: 10px;
+  }
+
+  .function-guide-feature {
+    min-height: 66px;
+  }
+}
+
+@media (max-width: 390px) {
+  .function-guide-trigger {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .function-guide-trigger span {
+    display: none;
+  }
+
+  .function-guide-panel {
+    bottom: calc(var(--mobile-nav-height) + 62px + env(safe-area-inset-bottom));
+  }
+}

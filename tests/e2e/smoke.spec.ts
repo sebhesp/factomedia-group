@@ -22,3 +22,14 @@ test("mobile more menu opens navigation tools", async ({ page, isMobile }) => {
   await expect(page.getByRole("dialog")).toContainText("Aprendizajes");
   await expect(page.getByRole("dialog")).toContainText("Portada");
 });
+
+test("function guide explains the current page", async ({ page }) => {
+  await page.goto("/mi-dia/", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Abrir guía de funciones" }).click();
+
+  const guide = page.getByRole("dialog", { name: "Guía de funciones" });
+  await expect(guide).toBeVisible();
+  await expect(guide).toContainText("Captura universal");
+  await expect(guide).toContainText("Menú Más móvil");
+  await expect(guide).toContainText("SIGUIENTE SUGERIDO");
+});
