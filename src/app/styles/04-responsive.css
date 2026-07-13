@@ -31,7 +31,7 @@
   .desk-header { height: 58px; justify-content: space-between; padding: 0 18px; }
   .mobile-brand { display: block; font-weight: 850; }
   .desk-content { padding: 24px 16px 95px; }
-  .mobile-nav { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.96); border-top: 1px solid var(--line); padding: 8px 4px max(8px, env(safe-area-inset-bottom)); backdrop-filter: blur(12px); }
+  .mobile-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.96); border-top: 1px solid var(--line); padding: 8px 4px max(8px, env(safe-area-inset-bottom)); backdrop-filter: blur(12px); }
   .mobile-nav a { display: grid; place-items: center; gap: 3px; color: var(--muted); font-size: 8px; }
   .mobile-nav a.active { color: var(--accent); }
   .welcome-row, .story-room-header { align-items: flex-start; flex-direction: column; }
