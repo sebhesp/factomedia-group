@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -18,6 +18,11 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui";
 import { trackProductEvent } from "@/lib/product-intelligence";
+import {
+  loadInstagramEngineItems,
+  requestInstagramSync,
+  type InstagramEngineItem,
+} from "@/lib/instagram-pipeline-client";
 
 const stages = {
   detected: { label: "Detectado", icon: Instagram, tone: "neutral" },
@@ -28,22 +33,7 @@ const stages = {
   published: { label: "Publicada", icon: FileText, tone: "success" },
 } as const;
 
-type Stage = keyof typeof stages;
-
-type ReelItem = {
-  id: string;
-  title: string;
-  publishedAgo: string;
-  presenter: string | null;
-  duration: string;
-  stage: Stage;
-  progress: number;
-  note: string;
-  externalMatches: number;
-  timingComparison: string;
-};
-
-const initialReels: ReelItem[] = [
+const initialReels: InstagramEngineItem[] = [
   {
     id: "ig-001",
     title: "Congreso abre discusión sobre reducción de la jornada laboral",
@@ -106,11 +96,32 @@ const initialReels: ReelItem[] = [
   },
 ];
 
+type DataMode = "loading" | "demo" | "live";
+
 export function InstagramEngine() {
-  const [items, setItems] = useState(initialReels);
+  const [items, setItems] = useState<InstagramEngineItem[]>(initialReels);
   const [syncing, setSyncing] = useState(false);
+  const [dataMode, setDataMode] = useState<DataMode>("loading");
+  const [connectionNote, setConnectionNote] = useState("Comprobando conexión…");
   const needsAction = useMemo(() => items.filter((item) => item.stage === "review" || item.stage === "ready"), [items]);
   const published = useMemo(() => items.filter((item) => item.stage === "published").length, [items]);
+
+  async function loadLiveData(showStatus = true) {
+    const result = await loadInstagramEngineItems();
+    if (result.mode === "live") {
+      if (result.items.length) setItems(result.items);
+      setDataMode("live");
+      if (showStatus) setConnectionNote(result.items.length ? "Datos reales sincronizados" : "Conectado · todavía no hay Reels importados");
+      return true;
+    }
+    setDataMode("demo");
+    if (showStatus) setConnectionNote(result.error ? "Demo activa · falta iniciar sesión o aplicar la base de datos" : "Demo activa · Supabase aún no está configurado");
+    return false;
+  }
+
+  useEffect(() => {
+    void loadLiveData();
+  }, []);
 
   function simulateSync() {
     setSyncing(true);
@@ -132,8 +143,32 @@ export function InstagramEngine() {
         ...current,
       ]);
       setSyncing(false);
+      setConnectionNote("Demo actualizada con un Reel simulado");
       trackProductEvent("instagram_sync_completed", { surface: "instagram_engine", demo: true, new_items: 1 });
     }, 900);
+  }
+
+  async function syncInstagram() {
+    if (dataMode !== "live") {
+      simulateSync();
+      return;
+    }
+
+    setSyncing(true);
+    setConnectionNote("Consultando Instagram…");
+    trackProductEvent("instagram_sync_started", { surface: "instagram_engine", demo: false });
+    const result = await requestInstagramSync();
+    if (!result.ok) {
+      setConnectionNote(result.reason === "not_authenticated" ? "Inicia sesión para sincronizar" : "No se pudo sincronizar; revisa la configuración del backend");
+      setSyncing(false);
+      trackProductEvent("instagram_sync_failed", { surface: "instagram_engine", reason: result.reason });
+      return;
+    }
+
+    await loadLiveData(false);
+    setConnectionNote("Instagram sincronizado correctamente");
+    setSyncing(false);
+    trackProductEvent("instagram_sync_completed", { surface: "instagram_engine", demo: false });
   }
 
   return (
@@ -145,16 +180,19 @@ export function InstagramEngine() {
           <p>Factomedia confía en el contenido publicado por @elfactonoticias como origen editorial revisado. Transcribe, estructura y prepara la nota; las fuentes externas aportan contexto, contradicciones y comparación de tiempos.</p>
         </div>
         <Card className="instagram-account-card">
-          <div className="instagram-account-heading"><span className="instagram-account-mark"><Instagram size={19} /></span><div><strong>@elfactonoticias</strong><small>Origen editorial confiable · DEMO</small></div></div>
-          <div className="instagram-account-state"><i /> Sincronización preparada</div>
-          <button type="button" className="button button-primary" onClick={simulateSync} disabled={syncing}>
-            <RefreshCw size={15} className={syncing ? "spin" : ""} /> {syncing ? "Buscando Reels…" : "Simular sincronización"}
+          <div className="instagram-account-heading">
+            <span className="instagram-account-mark"><Instagram size={19} /></span>
+            <div><strong>@elfactonoticias</strong><small>Origen editorial confiable · {dataMode === "live" ? "CONECTADO" : dataMode === "loading" ? "CONECTANDO" : "DEMO"}</small></div>
+          </div>
+          <div className="instagram-account-state"><i /> {connectionNote}</div>
+          <button type="button" className="button button-primary" onClick={() => void syncInstagram()} disabled={syncing || dataMode === "loading"}>
+            <RefreshCw size={15} className={syncing ? "spin" : ""} /> {syncing ? "Buscando Reels…" : dataMode === "live" ? "Sincronizar Instagram" : "Simular sincronización"}
           </button>
         </Card>
       </section>
 
       <section className="instagram-engine-kpis" aria-label="Estado del motor editorial">
-        <Card><span>REELS HOY</span><strong>15</strong><small>objetivo operativo diario</small></Card>
+        <Card><span>REELS EN BANDEJA</span><strong>{items.length}</strong><small>{dataMode === "live" ? "importados desde Instagram" : "demostración operativa"}</small></Card>
         <Card><span>EN PROCESO</span><strong>{items.filter((item) => ["detected", "transcribing", "researching"].includes(item.stage)).length}</strong><small>sin repetir revisión editorial</small></Card>
         <Card><span>NECESITAN ACCIÓN</span><strong>{needsAction.length}</strong><small>edición o aprobación final</small></Card>
         <Card><span>PUBLICADAS</span><strong>{published}</strong><small>con origen y tiempos registrados</small></Card>
@@ -198,9 +236,9 @@ export function InstagramEngine() {
         <aside className="instagram-engine-rail">
           <Card className="instagram-next-card">
             <span className="eyebrow">SIGUIENTE ACCIÓN</span>
-            <h2>Revisar una sola nota.</h2>
-            <p>No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram.</p>
-            <Link href="/desk/noticias/sala?id=ig-001" className="button button-primary">Continuar revisión <ArrowRight size={15} /></Link>
+            <h2>{needsAction.length ? "Revisar una sola nota." : "La bandeja está al día."}</h2>
+            <p>{needsAction.length ? "No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram." : "Factomedia continuará procesando los nuevos Reels en cuanto aparezcan."}</p>
+            {needsAction[0] ? <Link href={`/desk/noticias/sala?id=${needsAction[0].id}`} className="button button-primary">Continuar revisión <ArrowRight size={15} /></Link> : null}
           </Card>
 
           <Card>
