@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, MessageCircle, Send, X } from "lucide-react";
 import { submitProductFeedback, trackProductEvent, type ProductFeedback } from "@/lib/product-intelligence";
 
@@ -19,6 +19,23 @@ export function FeedbackWidget() {
   const [category, setCategory] = useState<ProductFeedback["category"]>("other");
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 0);
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   function openWidget() {
     setOpen(true);
@@ -52,7 +69,7 @@ export function FeedbackWidget() {
           <section className="feedback-panel" role="dialog" aria-modal="true" aria-label="Enviar feedback" onMouseDown={(event) => event.stopPropagation()}>
             <header>
               <div><span>MEJORA CONTINUA</span><h2>¿Esta pantalla te ayudó a avanzar?</h2></div>
-              <button type="button" onClick={closeWidget} aria-label="Cerrar"><X size={17} /></button>
+              <button ref={closeButtonRef} type="button" onClick={closeWidget} aria-label="Cerrar"><X size={17} /></button>
             </header>
 
             {sent ? (
