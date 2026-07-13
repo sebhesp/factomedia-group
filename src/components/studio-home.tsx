@@ -20,7 +20,9 @@ import {
 import { Card } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
 import { currentUser, demoStories } from "@/lib/demo-data";
+import { saveLocalStory } from "@/lib/demo-store";
 import type { Story } from "@/lib/types";
+import { slugify } from "@/lib/utils";
 
 const captureModes = [
   { id: "text", label: "Escribir", icon: Type },
@@ -51,6 +53,27 @@ function readiness(story: Story) {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+function titleFromCapture(value: string) {
+  const first = value.split(/[.!?\n]/).find((part) => part.trim().length > 12)?.trim() ?? value.trim();
+  const compact = first.split(/\s+/).slice(0, 12).join(" ");
+  return compact.length > 82 ? `${compact.slice(0, 79)}…` : compact.replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function summaryFromCapture(value: string) {
+  const compact = value.replace(/\s+/g, " ").trim();
+  return compact.length <= 220 ? compact : `${compact.slice(0, 217).replace(/\s+\S*$/, "")}…`;
+}
+
+function categoryFromCapture(value: string) {
+  const text = value.toLowerCase();
+  if (/música|artista|festival|concierto|álbum/.test(text)) return "Música";
+  if (/gobierno|congreso|president|elección|política/.test(text)) return "Política";
+  if (/tecnología|software|aplicación|inteligencia artificial|digital/.test(text)) return "Tecnología";
+  if (/economía|precio|mercado|empresa|empleo/.test(text)) return "Economía";
+  if (/museo|cine|libro|cultura|exposición/.test(text)) return "Cultura";
+  return "Ciudad";
+}
+
 export function StudioHome() {
   const router = useRouter();
   const [capture, setCapture] = useState("");
@@ -62,10 +85,36 @@ export function StudioHome() {
   function beginCapture(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = capture.trim();
-    if (value) {
-      window.sessionStorage.setItem("factomedia:initial-capture", JSON.stringify({ material: value, mode }));
+    if (!value) {
+      router.push("/desk/noticias/nueva");
+      return;
     }
-    router.push("/desk/noticias/nueva");
+
+    const now = new Date().toISOString();
+    const id = crypto.randomUUID();
+    const title = titleFromCapture(value) || "Nueva historia";
+    const story: Story = {
+      id,
+      slug: slugify(title),
+      title,
+      summary: summaryFromCapture(value),
+      body: value,
+      category: categoryFromCapture(value),
+      status: "draft",
+      author: "Mariana Torres",
+      responsible: "Mariana Torres",
+      sources: [],
+      claims: [],
+      createdAt: now,
+      updatedAt: now,
+      corrections: [],
+      events: [{ id: crypto.randomUUID(), type: "Captura universal creada", actor: "Mariana Torres", occurredAt: now, comment: `Entrada rápida desde ${mode}` }],
+      metrics: { views: 0, readsStarted: 0, readsCompleted: 0, shares: 0 },
+      demo: true,
+    };
+
+    saveLocalStory(story);
+    router.push(`/desk/noticias/sala?id=${id}`);
   }
 
   return (
@@ -126,7 +175,7 @@ export function StudioHome() {
                   <div className="priority-action"><CircleAlert size={16} /><span><small>SIGUIENTE ACCIÓN</small><strong>{nextAction(priority).label}</strong></span></div>
                 </div>
                 <div className="priority-progress">
-                  <div className="progress-orbit"><span>{readiness(priority)}%</span></div>
+                  <div className="progress-orbit" style={{ background: `conic-gradient(var(--accent) ${readiness(priority)}%, #e4e5df 0)` }}><span>{readiness(priority)}%</span></div>
                   <StatusBadge status={priority.status} />
                   <span>Continuar <ArrowRight size={15} /></span>
                 </div>
