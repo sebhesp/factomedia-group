@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -20,6 +20,7 @@ import {
 import { Card } from "@/components/ui";
 import { saveLocalStory } from "@/lib/demo-store";
 import { searchLiveNews, type RadarCluster, type RadarVerificationStatus } from "@/lib/news-radar";
+import { trackProductEvent } from "@/lib/product-intelligence";
 import type { Story } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
@@ -53,6 +54,7 @@ function summaryFromCluster(cluster: RadarCluster) {
 
 export function NewsRadar() {
   const router = useRouter();
+  const initialSearchStarted = useRef(false);
   const [scope, setScope] = useState<(typeof scopes)[number]["id"]>("mexico");
   const [customQuery, setCustomQuery] = useState("");
   const [minutes, setMinutes] = useState(15);
@@ -66,26 +68,40 @@ export function NewsRadar() {
 
   const runSearch = useCallback(async () => {
     const controller = new AbortController();
+    const searchMode = customQuery.trim() ? "custom" : "preset";
     setLoading(true);
     setError("");
+    trackProductEvent("radar_search_started", { scope, minutes, search_mode: searchMode });
     try {
       const query = customQuery.trim()
         ? `(${customQuery.trim()}) sourcelang:spanish`
         : selectedScope.query;
       const result = await searchLiveNews(query, minutes, controller.signal);
+      const confirmed = result.filter((cluster) => cluster.verificationStatus === "confirmed" || cluster.verificationStatus === "corroborated").length;
       setClusters(result);
       setLastUpdated(new Date().toISOString());
+      trackProductEvent("radar_search_completed", {
+        scope,
+        minutes,
+        search_mode: searchMode,
+        cluster_count: result.length,
+        verified_count: confirmed,
+        source_count: result.reduce((sum, cluster) => sum + cluster.domains.length, 0),
+      });
       if (!result.length) setError("No encontramos cobertura reciente con esos filtros. Amplía la ventana o cambia el tema.");
-    } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "No fue posible consultar el radar.";
-      setError(`${message} No se mostrará información inventada ni desactualizada.`);
+    } catch {
+      trackProductEvent("app_error", { kind: "radar_search_failed", scope, minutes });
+      setError("No fue posible consultar el radar. No se mostrará información inventada ni desactualizada.");
       setClusters([]);
     } finally {
       setLoading(false);
     }
-  }, [customQuery, minutes, selectedScope.query]);
+  }, [customQuery, minutes, scope, selectedScope.query]);
 
   useEffect(() => {
+    if (initialSearchStarted.current) return;
+    initialSearchStarted.current = true;
+    trackProductEvent("radar_opened", { source: "route" });
     void runSearch();
   }, [runSearch]);
 
@@ -130,6 +146,13 @@ export function NewsRadar() {
       demo: true,
     };
     saveLocalStory(story);
+    trackProductEvent("radar_story_created", {
+      scope,
+      verification_status: cluster.verificationStatus,
+      source_count: cluster.domains.length,
+      verification_score: cluster.verificationScore,
+    });
+    trackProductEvent("story_created", { source: "radar", category: story.category });
     router.push(`/desk/noticias/sala?id=${id}`);
   }
 
@@ -137,7 +160,7 @@ export function NewsRadar() {
     <div className="news-radar-page">
       <header className="radar-header">
         <div>
-          <Link href="/mi-dia" className="radar-back"><ArrowLeft size={15} /> Volver a Mi mesa</Link>
+          <Link href="/mi-dia" className="radar-back" data-track-event="navigation_used" data-track-id="radar-back" data-track-destination="mi-dia"><ArrowLeft size={15} /> Volver a Mi mesa</Link>
           <span className="eyebrow">FACTOMEDIA RADAR</span>
           <h1>Buscar noticia</h1>
           <p>Detecta cobertura de los últimos minutos, agrupa fuentes y muestra qué puede sostenerse y qué sigue pendiente.</p>
@@ -148,7 +171,7 @@ export function NewsRadar() {
       <Card className="radar-controls">
         <div className="radar-scope-row">
           <span>Explorar</span>
-          <div>{scopes.map((item) => <button key={item.id} type="button" className={scope === item.id ? "active" : ""} onClick={() => { setScope(item.id); setCustomQuery(""); }}>{item.label}</button>)}</div>
+          <div>{scopes.map((item) => <button key={item.id} type="button" className={scope === item.id ? "active" : ""} onClick={() => { setScope(item.id); setCustomQuery(""); }} data-track-event="navigation_used" data-track-id={`radar-scope-${item.id}`} data-track-destination={item.id}>{item.label}</button>)}</div>
         </div>
         <div className="radar-search-row">
           <label><Search size={18} /><input value={customQuery} onChange={(event) => setCustomQuery(event.target.value)} placeholder="Tema, persona, institución o lugar…" /></label>
@@ -158,7 +181,7 @@ export function NewsRadar() {
             <option value={60}>Última hora</option>
             <option value={180}>Últimas 3 horas</option>
           </select>
-          <button type="button" className="button button-primary" onClick={() => void runSearch()} disabled={loading}>
+          <button type="button" className="button button-primary" onClick={() => void runSearch()} disabled={loading} data-track-id="radar-search-submit">
             <RefreshCw size={16} className={loading ? "spin" : ""} /> {loading ? "Buscando" : "Buscar noticias"}
           </button>
         </div>
@@ -185,14 +208,14 @@ export function NewsRadar() {
                 <p>{cluster.verificationReason}</p>
                 <div className="radar-score"><span><i style={{ width: `${cluster.verificationScore}%` }} /></span><strong>{cluster.verificationScore}/100</strong><small>{copy.detail}</small></div>
                 <div className="radar-source-list">
-                  {cluster.articles.slice(0, 5).map((article) => <a key={article.id} href={article.url} target="_blank" rel="noreferrer"><span>{article.domain}</span>{article.sourceType === "official" && <small>PRIMARIA</small>}<ExternalLink size={13} /></a>)}
+                  {cluster.articles.slice(0, 5).map((article) => <a key={article.id} href={article.url} target="_blank" rel="noreferrer" data-track-event="navigation_used" data-track-id={`radar-source-${article.id}`} data-track-destination="external_source"><span>{article.domain}</span>{article.sourceType === "official" && <small>PRIMARIA</small>}<ExternalLink size={13} /></a>)}
                 </div>
               </div>
               <aside className="radar-story-actions">
                 <span className="radar-rank"><Sparkles size={16} /> Prioridad sugerida</span>
                 <p>{cluster.verificationStatus === "unverified" ? "Busca una segunda fuente antes de redactar." : "La señal ya tiene suficiente respaldo para abrir una investigación editorial."}</p>
-                <button type="button" className="button button-primary" onClick={() => createStory(cluster)}><FilePlus2 size={16} /> Crear Noticia Maestra</button>
-                <button type="button" className="button button-secondary" onClick={() => window.open(cluster.articles[0]?.url, "_blank", "noopener,noreferrer")}>Abrir fuente principal <ArrowRight size={15} /></button>
+                <button type="button" className="button button-primary" onClick={() => createStory(cluster)} data-track-id={`radar-create-${cluster.id}`}><FilePlus2 size={16} /> Crear Noticia Maestra</button>
+                <button type="button" className="button button-secondary" onClick={() => window.open(cluster.articles[0]?.url, "_blank", "noopener,noreferrer")} data-track-event="navigation_used" data-track-id={`radar-primary-${cluster.id}`} data-track-destination="primary_source">Abrir fuente principal <ArrowRight size={15} /></button>
               </aside>
             </Card>
           );
