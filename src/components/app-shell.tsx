@@ -49,10 +49,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
   useEffect(() => {
-    setMobileMoreOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     if (!mobileMoreOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -110,7 +106,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <header><div><span>FACTOMEDIA STUDIO</span><h2>Más herramientas</h2></div><button type="button" onClick={() => setMobileMoreOpen(false)} aria-label="Cerrar"><X size={20} /></button></header>
               <nav>
                 {mobileSecondaryLinks.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-more-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
+                  <Link key={href} href={href} onClick={() => setMobileMoreOpen(false)} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-more-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
                     <span><Icon size={20} /></span><div><strong>{label}</strong><small>{href === "/distribucion" ? "Posts, métricas y seguimiento" : href === "/aprendizajes" ? "Fricciones, experimentos y mejoras" : "Sitio público de Factomedia"}</small></div><ChevronRight size={18} />
                   </Link>
                 ))}
