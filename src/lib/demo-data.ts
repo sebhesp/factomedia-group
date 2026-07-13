@@ -1,0 +1,86 @@
+import type { Story } from "@/lib/types";
+
+export const demoStories: Story[] = [
+  {
+    id: "demo-1",
+    slug: "ciudad-abre-nuevos-corredores-verdes",
+    title: "La ciudad abre tres nuevos corredores verdes para conectar barrios",
+    summary:
+      "El proyecto piloto prioriza movilidad peatonal, sombra y recuperación de espacio público en tres zonas de la capital.",
+    body:
+      "La administración local presentó un programa piloto para transformar tres ejes urbanos en corredores verdes. La primera etapa contempla banquetas más amplias, arbolado, cruces seguros y espacios de descanso.\n\nEl equipo responsable informó que los trabajos se ejecutarán por tramos para reducir afectaciones y que habrá consultas vecinales durante la implementación. Especialistas consultados señalaron que la evaluación deberá incluir seguridad vial, temperatura superficial y uso real del espacio público.",
+    category: "Ciudad",
+    status: "published",
+    author: "Mariana Torres",
+    responsible: "Elena Ruiz",
+    sources: [
+      { id: "s1", name: "Programa urbano publicado", type: "document" },
+      { id: "s2", name: "Entrevista con coordinación del proyecto", type: "person" },
+    ],
+    claims: [
+      { id: "c1", text: "El programa contempla tres corredores en su primera etapa.", status: "supported", sourceIds: ["s1"] },
+      { id: "c2", text: "Los trabajos se ejecutarán por tramos.", status: "supported", sourceIds: ["s2"] },
+    ],
+    createdAt: "2026-07-12T13:20:00-06:00",
+    updatedAt: "2026-07-12T16:45:00-06:00",
+    publishedAt: "2026-07-12T16:30:00-06:00",
+    corrections: [],
+    events: [
+      { id: "e1", type: "Noticia creada", actor: "Mariana Torres", occurredAt: "2026-07-12T13:20:00-06:00" },
+      { id: "e2", type: "Revisión solicitada", actor: "Mariana Torres", occurredAt: "2026-07-12T15:10:00-06:00" },
+      { id: "e3", type: "Noticia publicada", actor: "Elena Ruiz", occurredAt: "2026-07-12T16:30:00-06:00" },
+    ],
+    metrics: { views: 1842, readsStarted: 1351, readsCompleted: 808, shares: 94 },
+    demo: true,
+  },
+  {
+    id: "demo-2",
+    slug: "universidades-presentan-red-laboratorios-abiertos",
+    title: "Universidades presentan una red de laboratorios abiertos",
+    summary: "La iniciativa compartirá equipo, mentorías y espacios de experimentación con estudiantes y proyectos independientes.",
+    body: "Cinco universidades anunciaron una red de laboratorios abiertos con acceso escalonado a equipo de fabricación, audio, fotografía y prototipado. El programa iniciará con convocatorias trimestrales.",
+    category: "Cultura",
+    status: "published",
+    author: "Diego Salas",
+    responsible: "Elena Ruiz",
+    sources: [{ id: "s3", name: "Comunicado conjunto", type: "document" }],
+    claims: [{ id: "c3", text: "Cinco universidades participan en la etapa inicial.", status: "supported", sourceIds: ["s3"] }],
+    createdAt: "2026-07-11T09:15:00-06:00",
+    updatedAt: "2026-07-11T14:10:00-06:00",
+    publishedAt: "2026-07-11T14:10:00-06:00",
+    corrections: [],
+    events: [{ id: "e4", type: "Noticia publicada", actor: "Elena Ruiz", occurredAt: "2026-07-11T14:10:00-06:00" }],
+    metrics: { views: 963, readsStarted: 702, readsCompleted: 420, shares: 31 },
+    demo: true,
+  },
+  {
+    id: "demo-3",
+    slug: "festival-independiente-anuncia-programacion",
+    title: "Festival independiente anuncia programación y sedes para agosto",
+    summary: "La edición reunirá música, cine y conversaciones en cuatro espacios del centro.",
+    body: "El festival independiente confirmó una programación de tres días con actividades en cuatro sedes. La organización publicará horarios detallados durante la próxima semana.",
+    category: "Música",
+    status: "review",
+    author: "Ana García",
+    responsible: "Elena Ruiz",
+    sources: [{ id: "s4", name: "Conferencia de prensa", type: "person" }],
+    claims: [{ id: "c4", text: "El festival tendrá actividades en cuatro sedes.", status: "pending", sourceIds: ["s4"] }],
+    createdAt: "2026-07-12T10:00:00-06:00",
+    updatedAt: "2026-07-12T15:00:00-06:00",
+    corrections: [],
+    events: [
+      { id: "e5", type: "Noticia creada", actor: "Ana García", occurredAt: "2026-07-12T10:00:00-06:00" },
+      { id: "e6", type: "Revisión solicitada", actor: "Ana García", occurredAt: "2026-07-12T15:00:00-06:00" },
+    ],
+    metrics: { views: 0, readsStarted: 0, readsCompleted: 0, shares: 0 },
+    demo: true,
+  },
+];
+
+export const currentUser = {
+  name: "Mariana",
+  fullName: "Mariana Torres",
+  role: "Colaboradora",
+  dailyGoal: 3,
+  completed: 2,
+};

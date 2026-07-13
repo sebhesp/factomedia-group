@@ -1,0 +1,59 @@
+
+@media (max-width: 1100px) {
+  .article-grid { grid-template-columns: repeat(2, 1fr); }
+  .newsroom-stats { grid-template-columns: repeat(3, 1fr); }
+  .start-grid { grid-template-columns: repeat(4, 1fr); }
+  .room-grid { grid-template-columns: 1fr; }
+  .room-tabs { display: flex; gap: 4px; background: #e7e6df; padding: 4px; border-radius: 10px; }
+  .room-tabs button { flex: 1; border: 0; background: transparent; border-radius: 8px; padding: 10px; font-size: 10px; }
+  .room-tabs button.active { background: #fff; }
+  .room-column { display: none; }
+  .room-column.visible-mobile { display: grid; }
+}
+
+@media (max-width: 760px) {
+  .public-header { height: 66px; } .public-header nav { display: none; }
+  .news-ticker { align-items: flex-start; padding: 13px 0; gap: 10px; flex-direction: column; }
+  .news-ticker p { margin: 0; line-height: 1.4; }
+  .public-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 55px; }
+  .hero-visual { min-height: 340px; }
+  .article-grid { grid-template-columns: 1fr; }
+  .section-heading { align-items: flex-start; gap: 15px; flex-direction: column; }
+  .categories-band a { font-size: 20px; }
+  .public-footer { grid-template-columns: 1fr; }
+  .login-page { grid-template-columns: 1fr; }
+  .login-brand-panel { min-height: 300px; padding: 28px; }
+  .login-brand-panel h2 { font-size: 42px; margin-top: 55px; }
+  .login-brand-panel .login-quote { display: none; }
+  .login-form-panel { padding: 45px 24px; }
+  .desk-shell { display: block; }
+  .sidebar { display: none; }
+  .desk-header { height: 58px; justify-content: space-between; padding: 0 18px; }
+  .mobile-brand { display: block; font-weight: 850; }
+  .desk-content { padding: 24px 16px 95px; }
+  .mobile-nav { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.96); border-top: 1px solid var(--line); padding: 8px 4px max(8px, env(safe-area-inset-bottom)); backdrop-filter: blur(12px); }
+  .mobile-nav a { display: grid; place-items: center; gap: 3px; color: var(--muted); font-size: 8px; }
+  .mobile-nav a.active { color: var(--accent); }
+  .welcome-row, .story-room-header { align-items: flex-start; flex-direction: column; }
+  .focus-grid { grid-template-columns: 1fr; }
+  .metric-strip { grid-template-columns: 1fr 1fr; }
+  .metric-strip > div:nth-child(2) { border-right: 0; }
+  .metric-strip > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .result-card { align-items: flex-start; flex-direction: column; }
+  .result-metrics { width: 100%; justify-content: space-between; gap: 10px; }
+  .newsroom-stats { grid-template-columns: 1fr 1fr; }
+  .kanban { grid-template-columns: 1fr; }
+  .new-story-layout { grid-template-columns: 1fr; }
+  .helper-panel { position: static; }
+  .start-grid { grid-template-columns: repeat(3, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full { grid-column: auto; }
+  .header-actions { width: 100%; }
+  .header-actions .button { flex: 1; }
+  .claim-card { grid-template-columns: auto 1fr; }
+  .claim-card select { grid-column: 1 / -1; }
+  .article-info { align-items: flex-start; gap: 20px; flex-direction: column; }
+  .article-transparency > div { flex-direction: column; gap: 8px; }
+}
+.sidebar-user select { width: 100%; border: 0; background: transparent; color: #fff; font-size: 10px; padding: 0; outline: none; }
+.sidebar-user select option { color: #111; }
