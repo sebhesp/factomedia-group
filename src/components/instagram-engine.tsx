@@ -22,7 +22,7 @@ import { trackProductEvent } from "@/lib/product-intelligence";
 const stages = {
   detected: { label: "Detectado", icon: Instagram, tone: "neutral" },
   transcribing: { label: "Transcribiendo", icon: Mic2, tone: "progress" },
-  researching: { label: "Investigando", icon: SearchCheck, tone: "progress" },
+  researching: { label: "Buscando contexto", icon: SearchCheck, tone: "progress" },
   review: { label: "Necesita revisión", icon: CircleAlert, tone: "warning" },
   ready: { label: "Nota lista", icon: CheckCircle2, tone: "success" },
   published: { label: "Publicada", icon: FileText, tone: "success" },
@@ -39,6 +39,8 @@ type ReelItem = {
   stage: Stage;
   progress: number;
   note: string;
+  externalMatches: number;
+  timingComparison: string;
 };
 
 const initialReels: ReelItem[] = [
@@ -49,8 +51,10 @@ const initialReels: ReelItem[] = [
     presenter: "Ilse Mariana Reyes Valle",
     duration: "01:18",
     stage: "review",
-    progress: 86,
-    note: "La nota está redactada. Falta confirmar una cifra del dictamen.",
+    progress: 92,
+    note: "El Reel ya fue revisado por El Facto. La nota está redactada; falta decidir si se añade una cifra externa.",
+    externalMatches: 3,
+    timingComparison: "El Facto publicó 6 min antes que el primer medio comparable",
   },
   {
     id: "ig-002",
@@ -60,7 +64,9 @@ const initialReels: ReelItem[] = [
     duration: "00:54",
     stage: "ready",
     progress: 100,
-    note: "Transcripción, fuentes y portada listas para aprobación.",
+    note: "Origen editorial revisado. Transcripción, autor, portada y nota listas para aprobación.",
+    externalMatches: 4,
+    timingComparison: "El Facto estuvo entre las primeras 3 cuentas en publicarlo",
   },
   {
     id: "ig-003",
@@ -69,8 +75,10 @@ const initialReels: ReelItem[] = [
     presenter: "José Jesús López Lagos",
     duration: "01:32",
     stage: "researching",
-    progress: 64,
-    note: "Contrastando el caption con documentos y fuentes independientes.",
+    progress: 72,
+    note: "La nota ya puede generarse. El sistema busca antecedentes y posibles contradicciones para enriquecerla.",
+    externalMatches: 5,
+    timingComparison: "Se detectaron publicaciones previas; se está comparando el contexto",
   },
   {
     id: "ig-004",
@@ -80,7 +88,9 @@ const initialReels: ReelItem[] = [
     duration: "00:47",
     stage: "transcribing",
     progress: 38,
-    note: "Procesando audio y texto visible en pantalla.",
+    note: "Procesando audio, caption y texto visible. El contenido de Instagram es el origen editorial de la nota.",
+    externalMatches: 2,
+    timingComparison: "Comparación temporal pendiente",
   },
   {
     id: "ig-005",
@@ -90,7 +100,9 @@ const initialReels: ReelItem[] = [
     duration: "00:42",
     stage: "published",
     progress: 100,
-    note: "Nota publicada y métricas sincronizadas.",
+    note: "Nota publicada desde el Reel y métricas sincronizadas.",
+    externalMatches: 3,
+    timingComparison: "El Facto publicó 12 min antes que la mediana detectada",
   },
 ];
 
@@ -113,7 +125,9 @@ export function InstagramEngine() {
           duration: "00:36",
           stage: "detected",
           progress: 8,
-          note: "Esperando importación de caption, video y miniatura.",
+          note: "Origen editorial detectado. Esperando importación de caption, video y miniatura.",
+          externalMatches: 0,
+          timingComparison: "Buscando publicaciones comparables",
         },
         ...current,
       ]);
@@ -126,12 +140,12 @@ export function InstagramEngine() {
     <div className="instagram-engine">
       <section className="instagram-engine-hero">
         <div>
-          <span className="eyebrow"><Instagram size={15} /> INSTAGRAM ES EL ORIGEN</span>
-          <h1>De Reel a nota, sin empezar desde cero.</h1>
-          <p>Factomedia detecta cada publicación, transcribe el video, separa hechos y opiniones, busca contexto y deja una Nota Maestra lista para revisión humana.</p>
+          <span className="eyebrow"><Instagram size={15} /> INSTAGRAM ES EL ORIGEN EDITORIAL</span>
+          <h1>De Reel revisado a nota, sin repetir el trabajo.</h1>
+          <p>Factomedia confía en el contenido publicado por @elfactonoticias como origen editorial revisado. Transcribe, estructura y prepara la nota; las fuentes externas aportan contexto, contradicciones y comparación de tiempos.</p>
         </div>
         <Card className="instagram-account-card">
-          <div className="instagram-account-heading"><span className="instagram-account-mark"><Instagram size={19} /></span><div><strong>@elfactonoticias</strong><small>Cuenta profesional · DEMO</small></div></div>
+          <div className="instagram-account-heading"><span className="instagram-account-mark"><Instagram size={19} /></span><div><strong>@elfactonoticias</strong><small>Origen editorial confiable · DEMO</small></div></div>
           <div className="instagram-account-state"><i /> Sincronización preparada</div>
           <button type="button" className="button button-primary" onClick={simulateSync} disabled={syncing}>
             <RefreshCw size={15} className={syncing ? "spin" : ""} /> {syncing ? "Buscando Reels…" : "Simular sincronización"}
@@ -141,9 +155,9 @@ export function InstagramEngine() {
 
       <section className="instagram-engine-kpis" aria-label="Estado del motor editorial">
         <Card><span>REELS HOY</span><strong>15</strong><small>objetivo operativo diario</small></Card>
-        <Card><span>EN PROCESO</span><strong>{items.filter((item) => ["detected", "transcribing", "researching"].includes(item.stage)).length}</strong><small>sin intervención necesaria</small></Card>
-        <Card><span>NECESITAN ACCIÓN</span><strong>{needsAction.length}</strong><small>revisión o aprobación</small></Card>
-        <Card><span>PUBLICADAS</span><strong>{published}</strong><small>con trazabilidad completa</small></Card>
+        <Card><span>EN PROCESO</span><strong>{items.filter((item) => ["detected", "transcribing", "researching"].includes(item.stage)).length}</strong><small>sin repetir revisión editorial</small></Card>
+        <Card><span>NECESITAN ACCIÓN</span><strong>{needsAction.length}</strong><small>edición o aprobación final</small></Card>
+        <Card><span>PUBLICADAS</span><strong>{published}</strong><small>con origen y tiempos registrados</small></Card>
       </section>
 
       <div className="instagram-engine-layout">
@@ -160,13 +174,14 @@ export function InstagramEngine() {
                     <div className="instagram-reel-meta"><span>{item.publishedAgo}</span><span>{item.presenter ?? "Autor por confirmar"}</span></div>
                     <h3>{item.title}</h3>
                     <p>{item.note}</p>
+                    <p><strong>{item.externalMatches} coincidencias externas</strong> · {item.timingComparison}</p>
                     <div className="instagram-progress"><i><b style={{ width: `${item.progress}%` }} /></i><span>{item.progress}%</span></div>
                   </div>
                   <div className="instagram-reel-action">
                     <span className={`instagram-stage ${config.tone}`}><Icon size={14} /> {config.label}</span>
                     {item.stage === "review" || item.stage === "ready" ? (
                       <Link href={`/desk/noticias/sala?id=${item.id}`} className="button button-primary" data-track-event="story_opened" data-track-source="instagram_engine">
-                        {item.stage === "ready" ? "Aprobar nota" : "Revisar pendiente"} <ArrowRight size={15} />
+                        {item.stage === "ready" ? "Aprobar nota" : "Revisar nota"} <ArrowRight size={15} />
                       </Link>
                     ) : item.stage === "published" ? (
                       <Link href="/registro" className="button button-ghost">Ver registro <ArrowRight size={15} /></Link>
@@ -184,7 +199,7 @@ export function InstagramEngine() {
           <Card className="instagram-next-card">
             <span className="eyebrow">SIGUIENTE ACCIÓN</span>
             <h2>Revisar una sola nota.</h2>
-            <p>No tienes que revisar toda la bandeja. Factomedia prioriza la pieza que está más cerca de publicarse.</p>
+            <p>No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram.</p>
             <Link href="/desk/noticias/sala?id=ig-001" className="button button-primary">Continuar revisión <ArrowRight size={15} /></Link>
           </Card>
 
@@ -192,15 +207,15 @@ export function InstagramEngine() {
             <span className="eyebrow">QUÉ HACE LA IA</span>
             <div className="instagram-capabilities">
               <span><Mic2 size={15} /> Transcribe el audio</span>
-              <span><Sparkles size={15} /> Estructura la nota</span>
-              <span><SearchCheck size={15} /> Señala qué falta verificar</span>
-              <span><UserRoundCheck size={15} /> Propone autoría sin reconocimiento facial</span>
+              <span><Sparkles size={15} /> Convierte el Reel en nota</span>
+              <span><SearchCheck size={15} /> Añade contexto y compara horarios</span>
+              <span><UserRoundCheck size={15} /> Conserva autoría sin reconocimiento facial</span>
             </div>
           </Card>
 
           <Card className="instagram-guardrail-card">
             <CircleAlert size={19} />
-            <div><strong>La IA no publica sola.</strong><p>Toda nota requiere revisión y aprobación editorial antes de llegar a la web.</p></div>
+            <div><strong>Confiamos en el origen, no en las invenciones.</strong><p>La IA puede reutilizar lo aprobado en Instagram, pero no agregar hechos materiales sin respaldo ni publicar sola.</p></div>
           </Card>
         </aside>
       </div>
