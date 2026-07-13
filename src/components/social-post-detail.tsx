@@ -15,7 +15,6 @@ import {
   Send,
   Sparkles,
   TrendingUp,
-  UserRound,
 } from "lucide-react";
 import { demoStories } from "@/lib/demo-data";
 import type { SocialMetricSnapshot, SocialPlatform, SocialPost } from "@/lib/social-types";
