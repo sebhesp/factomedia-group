@@ -10,6 +10,7 @@ import {
   ChevronRight,
   CircleGauge,
   FilePlus2,
+  Instagram,
   MoreHorizontal,
   Newspaper,
   Radio,
@@ -32,9 +33,10 @@ type NavigationLink = {
 
 const links: readonly NavigationLink[] = [
   { href: "/mi-dia", label: "Mi mesa", icon: CircleGauge },
+  { href: "/instagram", label: "Instagram", icon: Instagram },
   { href: "/buscar-noticia", label: "Buscar noticia", mobileLabel: "Buscar", icon: SearchCheck },
-  { href: "/desk/noticias/nueva", label: "Capturar", icon: FilePlus2 },
   { href: "/redaccion", label: "Ahora", icon: Radio },
+  { href: "/desk/noticias/nueva", label: "Capturar manualmente", mobileLabel: "Capturar", icon: FilePlus2 },
   { href: "/distribucion", label: "Distribución", icon: BarChart3 },
   { href: "/aprendizajes", label: "Aprendizajes", icon: BrainCircuit },
   { href: "/", label: "Portada", icon: Newspaper },
@@ -42,6 +44,13 @@ const links: readonly NavigationLink[] = [
 
 const mobilePrimaryLinks = links.slice(0, 4);
 const mobileSecondaryLinks = links.slice(4);
+
+function mobileDescription(href: string) {
+  if (href === "/desk/noticias/nueva") return "Crear una historia fuera del flujo de Instagram";
+  if (href === "/distribucion") return "Posts, métricas y seguimiento";
+  if (href === "/aprendizajes") return "Fricciones, experimentos y mejoras";
+  return "Sitio público de Factomedia";
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -97,7 +106,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span className="brand-mark">F</span>
           <span className="brand-copy"><strong>FACTOMEDIA</strong><small>STUDIO</small></span>
         </Link>
-        <span className="nav-section-label">ESPACIO DE TRABAJO</span>
+        <span className="nav-section-label">MOTOR EDITORIAL</span>
         <nav className="side-nav">
           {links.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} className={cn("side-link", isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`nav-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
@@ -106,20 +115,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <div className="sidebar-hint"><span>⌘ K</span><p>Busca historias o ejecuta cualquier acción.</p></div>
-        <div className="sidebar-user"><div className="avatar"><UserRound size={18} /></div><div><strong>Mariana Torres</strong><select aria-label="Rol DEMO" value={role} onChange={(event) => setRole(event.target.value as DemoRole)}><option value="collaborator">Colaboradora</option><option value="editor">Editora</option><option value="admin">Administradora</option></select><span>{roleLabels[role]} · DEMO</span></div></div>
+        <div className="sidebar-user"><div className="avatar"><UserRound size={18} /></div><div><strong>Ilse Reyes</strong><select aria-label="Rol DEMO" value={role} onChange={(event) => setRole(event.target.value as DemoRole)}><option value="collaborator">Colaboradora</option><option value="editor">Editora</option><option value="admin">Administradora</option></select><span>{roleLabels[role]} · DEMO</span></div></div>
       </aside>
 
       <div className="desk-main">
         <header className="desk-header">
-          <div className="desk-header-left"><span className="mobile-brand">Factomedia Studio</span><span className="workspace-status"><i /> Redacción conectada</span></div>
-          <div className="desk-header-actions"><Link href="/buscar-noticia" className="radar-entry-button" data-track-event="navigation_used" data-track-id="header-search-news" data-track-destination="buscar-noticia" data-track-surface="header"><SearchCheck size={15} /> Buscar noticia</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications" data-track-destination="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
+          <div className="desk-header-left"><span className="mobile-brand">Factomedia Studio</span><span className="workspace-status"><i /> Instagram conectado · DEMO</span></div>
+          <div className="desk-header-actions"><Link href="/instagram" className="radar-entry-button" data-track-event="navigation_used" data-track-id="header-instagram-engine" data-track-destination="instagram" data-track-surface="header"><Instagram size={15} /> Ver Reels</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications" data-track-destination="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
         </header>
 
         <main className="desk-content">{children}</main>
 
         <nav className="mobile-nav" aria-label="Navegación principal">
           {mobilePrimaryLinks.map(({ href, label, mobileLabel, icon: Icon }) => (
-            <Link key={href} href={href} className={cn(isActive(href) && "active", href === "/desk/noticias/nueva" && "mobile-capture-action")} data-track-event="navigation_used" data-track-id={`mobile-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
+            <Link key={href} href={href} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
               <span className="mobile-nav-icon"><Icon size={21} /></span><span>{mobileLabel ?? label}</span>
             </Link>
           ))}
@@ -145,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <nav>
                 {mobileSecondaryLinks.map(({ href, label, icon: Icon }) => (
                   <Link key={href} href={href} onClick={() => setMobileMoreOpen(false)} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-more-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
-                    <span><Icon size={20} /></span><div><strong>{label}</strong><small>{href === "/distribucion" ? "Posts, métricas y seguimiento" : href === "/aprendizajes" ? "Fricciones, experimentos y mejoras" : "Sitio público de Factomedia"}</small></div><ChevronRight size={18} />
+                    <span><Icon size={20} /></span><div><strong>{label}</strong><small>{mobileDescription(href)}</small></div><ChevronRight size={18} />
                   </Link>
                 ))}
               </nav>
