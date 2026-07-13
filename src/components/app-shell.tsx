@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="desk-main">
         <header className="desk-header">
           <div className="desk-header-left"><span className="mobile-brand">Factomedia Studio</span><span className="workspace-status"><i /> Redacción conectada</span></div>
-          <div className="desk-header-actions"><Link href="/buscar-noticia" className="radar-entry-button" data-track-event="radar_opened" data-track-id="header-search-news" data-track-surface="header"><SearchCheck size={15} /> Buscar noticia</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
+          <div className="desk-header-actions"><Link href="/buscar-noticia" className="radar-entry-button" data-track-event="navigation_used" data-track-id="header-search-news" data-track-destination="buscar-noticia" data-track-surface="header"><SearchCheck size={15} /> Buscar noticia</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications" data-track-destination="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
         </header>
         <main className="desk-content">{children}</main>
         <nav className="mobile-nav">
