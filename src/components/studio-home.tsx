@@ -21,6 +21,7 @@ import { Card } from "@/components/ui";
 import { StatusBadge } from "@/components/status-badge";
 import { currentUser, demoStories } from "@/lib/demo-data";
 import { saveLocalStory } from "@/lib/demo-store";
+import { trackProductEvent } from "@/lib/product-intelligence";
 import type { Story } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
@@ -74,18 +75,34 @@ function categoryFromCapture(value: string) {
   return "Ciudad";
 }
 
+function lengthBucket(value: string) {
+  if (value.length < 80) return "short";
+  if (value.length < 400) return "medium";
+  return "long";
+}
+
 export function StudioHome() {
   const router = useRouter();
   const [capture, setCapture] = useState("");
   const [mode, setMode] = useState<CaptureMode>("text");
+  const [captureStarted, setCaptureStarted] = useState(false);
   const activeStories = useMemo(() => demoStories.filter((story) => story.status !== "published"), []);
   const priority = activeStories[0];
   const today = new Intl.DateTimeFormat("es-MX", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+
+  function updateCapture(value: string) {
+    setCapture(value);
+    if (!captureStarted && value.trim()) {
+      setCaptureStarted(true);
+      trackProductEvent("capture_started", { mode, surface: "mi_mesa" });
+    }
+  }
 
   function beginCapture(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = capture.trim();
     if (!value) {
+      trackProductEvent("navigation_used", { destination: "new_story", source: "empty_capture" });
       router.push("/desk/noticias/nueva");
       return;
     }
@@ -114,6 +131,8 @@ export function StudioHome() {
     };
 
     saveLocalStory(story);
+    trackProductEvent("capture_completed", { mode, surface: "mi_mesa", length_bucket: lengthBucket(value) });
+    trackProductEvent("story_created", { source: "universal_capture", category: story.category });
     router.push(`/desk/noticias/sala?id=${id}`);
   }
 
@@ -139,7 +158,7 @@ export function StudioHome() {
         </div>
         <textarea
           value={capture}
-          onChange={(event) => setCapture(event.target.value)}
+          onChange={(event) => updateCapture(event.target.value)}
           placeholder="¿Qué está pasando? Escribe, pega un enlace o deja una nota para investigar…"
           rows={4}
           aria-label="Material inicial para una noticia"
@@ -147,12 +166,12 @@ export function StudioHome() {
         <div className="capture-footer">
           <div className="capture-modes">
             {captureModes.map(({ id, label, icon: Icon }) => (
-              <button type="button" key={id} className={mode === id ? "active" : ""} onClick={() => setMode(id)}>
+              <button type="button" key={id} className={mode === id ? "active" : ""} onClick={() => setMode(id)} data-track-event="navigation_used" data-track-id={`capture-mode-${id}`} data-track-destination={id}>
                 <Icon size={15} /> {label}
               </button>
             ))}
           </div>
-          <button type="submit" className="capture-submit">
+          <button type="submit" className="capture-submit" data-track-id="capture-submit">
             {capture.trim() ? "Organizar material" : "Abrir espacio nuevo"} <ArrowRight size={17} />
           </button>
         </div>
@@ -167,7 +186,7 @@ export function StudioHome() {
                 <span className="quiet-copy">Ordenado por lo que desbloquea más trabajo</span>
               </div>
 
-              <Link href={`/desk/noticias/sala?id=${priority.id}`} className="priority-story">
+              <Link href={`/desk/noticias/sala?id=${priority.id}`} className="priority-story" data-track-event="story_opened" data-track-id="priority-story" data-track-source="mi_mesa" data-track-readiness={readiness(priority)}>
                 <div className="priority-story-copy">
                   <span className="story-category">{priority.category}</span>
                   <h3>{priority.title}</h3>
@@ -186,13 +205,13 @@ export function StudioHome() {
           <section className="active-work-section">
             <div className="studio-section-heading">
               <div><span className="eyebrow">TU TRABAJO ACTIVO</span><h2>Historias en movimiento</h2></div>
-              <Link href="/redaccion">Ver toda la redacción <ArrowRight size={14} /></Link>
+              <Link href="/redaccion" data-track-event="navigation_used" data-track-id="view-newsroom" data-track-destination="redaccion">Ver toda la redacción <ArrowRight size={14} /></Link>
             </div>
             <div className="studio-story-list">
               {activeStories.slice(1).map((story) => {
                 const action = nextAction(story);
                 return (
-                  <Link href={`/desk/noticias/sala?id=${story.id}`} className="studio-story-row" key={story.id}>
+                  <Link href={`/desk/noticias/sala?id=${story.id}`} className="studio-story-row" key={story.id} data-track-event="story_opened" data-track-id={`story-${story.id}`} data-track-source="active_list" data-track-readiness={readiness(story)}>
                     <span className={`story-state-icon ${action.tone}`}>
                       {action.tone === "success" ? <CheckCircle2 size={17} /> : action.tone === "neutral" ? <Clock3 size={17} /> : <CircleAlert size={17} />}
                     </span>
@@ -223,7 +242,7 @@ export function StudioHome() {
             <div className="live-card-heading"><span><Radio size={17} /> AHORA</span><i /></div>
             <h3>La cobertura en vivo está lista.</h3>
             <p>Convierte una señal en un acontecimiento verificable y prepara actualizaciones para X desde un solo núcleo.</p>
-            <Link href="/redaccion">Abrir redacción en vivo <ArrowRight size={15} /></Link>
+            <Link href="/redaccion" data-track-event="navigation_used" data-track-id="open-live-newsroom" data-track-destination="redaccion">Abrir redacción en vivo <ArrowRight size={15} /></Link>
           </Card>
 
           <div className="studio-day-summary">
