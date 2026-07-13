@@ -1,0 +1,35 @@
+name: Restore Factomedia repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.bootstrap/**'
+      - '.github/workflows/restore-repository.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout bootstrap commit
+        uses: actions/checkout@v4
+
+      - name: Rebuild Git bundle
+        shell: bash
+        run: |
+          cat .bootstrap/part-* | base64 --decode > /tmp/factomedia.bundle
+          git bundle verify /tmp/factomedia.bundle
+
+      - name: Restore complete repository history
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone /tmp/factomedia.bundle /tmp/factomedia
+          cd /tmp/factomedia
+          git remote remove origin
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin main:main
