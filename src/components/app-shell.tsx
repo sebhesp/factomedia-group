@@ -52,7 +52,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (!mobileMoreOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileMoreOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
     return () => {
+      window.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
   }, [mobileMoreOpen]);
