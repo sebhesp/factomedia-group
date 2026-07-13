@@ -24,8 +24,11 @@ export function ProductIntelligenceProvider({ children }: { children: React.Reac
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
-      const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-track-event]") : null;
+      const target = event.target instanceof Element
+        ? event.target.closest<HTMLElement>("[data-track-event],[data-track-id]")
+        : null;
       if (!target) return;
+
       const eventName = target.dataset.trackEvent as ProductEventName | undefined;
       if (eventName) trackProductEvent(eventName, eventProperties(target));
 
