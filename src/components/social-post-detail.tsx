@@ -6,9 +6,9 @@ import {
   AlertTriangle,
   ArrowLeft,
   BarChart3,
+  Camera,
   CheckCircle2,
   ExternalLink,
-  Instagram,
   Link2,
   MessageCircle,
   RefreshCw,
@@ -29,7 +29,7 @@ import {
 import { Button, Card } from "@/components/ui";
 
 const platformLabels: Record<SocialPlatform, string> = { x: "X", instagram: "Instagram", threads: "Threads" };
-const platformIcons = { x: MessageCircle, instagram: Instagram, threads: Send };
+const platformIcons = { x: MessageCircle, instagram: Camera, threads: Send };
 
 function number(value: number) {
   return new Intl.NumberFormat("es-MX").format(value);
@@ -72,7 +72,8 @@ export function SocialPostDetail({ postId }: { postId: string }) {
   const post = posts.find((item) => item.id === postId);
 
   useEffect(() => {
-    setPosts(getSocialPosts());
+    const handle = window.setTimeout(() => setPosts(getSocialPosts()), 0);
+    return () => window.clearTimeout(handle);
   }, []);
 
   const comparison = useMemo(() => {

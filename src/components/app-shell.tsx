@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -47,6 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { role, setRole } = useDemoRole();
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const mobileMoreOpenedAt = useRef(0);
 
   useEffect(() => {
     if (!mobileMoreOpen) return;
@@ -61,6 +62,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = previousOverflow;
     };
   }, [mobileMoreOpen]);
+
+  function openMobileMore() {
+    mobileMoreOpenedAt.current = Date.now();
+    setMobileMoreOpen(true);
+  }
+
+  function openMobileMoreFromTouch(event: React.TouchEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    openMobileMore();
+  }
+
+  function openMobileMoreFromPointer(event: React.PointerEvent<HTMLButtonElement>) {
+    if (event.pointerType !== "touch") return;
+    event.preventDefault();
+    event.stopPropagation();
+    openMobileMore();
+  }
+
+  function closeMobileMoreFromBackdrop() {
+    if (Date.now() - mobileMoreOpenedAt.current < 350) return;
+    setMobileMoreOpen(false);
+  }
 
   function isActive(href: string) {
     return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
@@ -99,14 +123,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="mobile-nav-icon"><Icon size={21} /></span><span>{mobileLabel ?? label}</span>
             </Link>
           ))}
-          <button type="button" className={cn("mobile-more-button", mobileSecondaryLinks.some(({ href }) => isActive(href)) && "active")} onClick={() => setMobileMoreOpen(true)} aria-label="Abrir más secciones" aria-expanded={mobileMoreOpen}>
+          <button
+            type="button"
+            className={cn("mobile-more-button", mobileSecondaryLinks.some(({ href }) => isActive(href)) && "active")}
+            onPointerDown={openMobileMoreFromPointer}
+            onTouchEnd={openMobileMoreFromTouch}
+            onClick={openMobileMore}
+            aria-label="Abrir más secciones"
+            aria-expanded={mobileMoreOpen}
+            aria-controls="mobile-more-menu"
+          >
             <span className="mobile-nav-icon"><MoreHorizontal size={21} /></span><span>Más</span>
           </button>
         </nav>
 
         {mobileMoreOpen && (
-          <div className="mobile-more-backdrop" role="presentation" onMouseDown={() => setMobileMoreOpen(false)}>
-            <section className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Más secciones" onMouseDown={(event) => event.stopPropagation()}>
+          <div className="mobile-more-backdrop" role="presentation" onMouseDown={closeMobileMoreFromBackdrop} onTouchStart={closeMobileMoreFromBackdrop}>
+            <section id="mobile-more-menu" className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Más secciones" onMouseDown={(event) => event.stopPropagation()} onTouchStart={(event) => event.stopPropagation()}>
               <div className="mobile-sheet-handle" />
               <header><div><span>FACTOMEDIA STUDIO</span><h2>Más herramientas</h2></div><button type="button" onClick={() => setMobileMoreOpen(false)} aria-label="Cerrar"><X size={20} /></button></header>
               <nav>

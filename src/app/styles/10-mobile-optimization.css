@@ -79,6 +79,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .mobile-nav {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    z-index: 120;
     min-height: var(--mobile-nav-height);
     padding: 6px max(4px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
     box-shadow: 0 -10px 32px rgba(20, 29, 23, .08);
@@ -120,18 +121,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     box-shadow: 0 8px 20px rgba(36, 92, 67, .23);
   }
   .mobile-capture-action.active .mobile-nav-icon { background: var(--accent-strong); }
-  .mobile-more-button { display: grid; }
+  .mobile-more-button { display: grid; touch-action: manipulation; user-select: none; }
 
   .mobile-more-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 110;
+    z-index: 1000;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     background: rgba(14, 18, 15, .48);
     backdrop-filter: blur(7px);
     padding: 12px 8px 0;
+    touch-action: none;
   }
   .mobile-more-sheet {
     width: min(540px, 100%);
@@ -144,6 +146,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     background: #fbfaf6;
     box-shadow: 0 -24px 80px rgba(10, 16, 12, .3);
     padding: 8px 15px calc(18px + env(safe-area-inset-bottom));
+    touch-action: pan-y;
   }
   .mobile-sheet-handle {
     width: 38px;

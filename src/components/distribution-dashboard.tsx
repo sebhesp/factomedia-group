@@ -7,9 +7,9 @@ import {
   AlertTriangle,
   ArrowUpRight,
   BarChart3,
+  Camera,
   CheckCircle2,
   ExternalLink,
-  Instagram,
   Link2,
   MessageCircle,
   RefreshCw,
@@ -37,7 +37,7 @@ const platformLabels: Record<SocialPlatform, string> = {
 
 const platformIcons = {
   x: MessageCircle,
-  instagram: Instagram,
+  instagram: Camera,
   threads: Send,
 };
 
@@ -78,7 +78,8 @@ export function DistributionDashboard() {
   const [resolvedAlerts, setResolvedAlerts] = useState<string[]>([]);
 
   useEffect(() => {
-    setPosts(getSocialPosts());
+    const handle = window.setTimeout(() => setPosts(getSocialPosts()), 0);
+    return () => window.clearTimeout(handle);
   }, []);
 
   const filteredPosts = useMemo(() => posts.filter((post) => {

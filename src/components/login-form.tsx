@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -25,7 +25,8 @@ export function LoginForm() {
     router.push("/mi-dia"); router.refresh();
   }
 
-  function enterDemo() {
+  function enterDemo(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
     localStorage.setItem("facto_demo_session", "true");
     router.push("/mi-dia");
   }
@@ -40,7 +41,7 @@ export function LoginForm() {
         <Button type="submit" disabled={loading}>{loading ? <LoaderCircle className="spin" size={18} /> : <>Entrar <ArrowRight size={18} /></>}</Button>
       </form>
       <div className="divider"><span>o prueba la experiencia</span></div>
-      <Button variant="secondary" onClick={enterDemo}>Entrar en modo DEMO</Button>
+      <a href="/mi-dia/" className="button button-secondary" onClick={enterDemo}>Entrar en modo DEMO</a>
       <p className="fine-print">El modo DEMO guarda borradores únicamente en este navegador.</p>
     </div>
   );
