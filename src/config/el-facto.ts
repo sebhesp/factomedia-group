@@ -43,7 +43,28 @@ export const elFactoEditorialConfig = {
       "certeza falsa",
     ],
   },
+  instagramTrustModel: {
+    ownAccountIsEditoriallyReviewed: true,
+    ownReelRole: "trusted_primary_editorial_input",
+    externalSourcesRole: [
+      "context",
+      "corroboration_when_needed",
+      "background",
+      "contradiction_detection",
+      "publication_timing_comparison",
+    ],
+    externalSourcesBlockDrafting: false,
+    externalSourcesBlockPublishingOnlyWhen: [
+      "the Reel itself marks a claim as unconfirmed",
+      "the generated note adds a material fact not present in the Reel or caption",
+      "the subject involves an accusation, casualty figure, legal risk or rapidly changing event",
+      "a later source materially contradicts the Reel",
+    ],
+    preserveInstagramPublicationTime: true,
+    compareCompetitorPublicationTimes: true,
+  },
   verificationStatuses: [
+    "editorially_reviewed_origin",
     "confirmed",
     "corroborated",
     "developing",
