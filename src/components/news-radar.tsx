@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui";
 import { saveLocalStory } from "@/lib/demo-store";
-import { clusterRadarArticles, searchLiveNews, type RadarCluster, type RadarVerificationStatus } from "@/lib/news-radar";
+import { searchLiveNews, type RadarCluster, type RadarVerificationStatus } from "@/lib/news-radar";
 import type { Story } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
@@ -83,7 +83,6 @@ export function NewsRadar() {
     } finally {
       setLoading(false);
     }
-    return () => controller.abort();
   }, [customQuery, minutes, selectedScope.query]);
 
   useEffect(() => {
