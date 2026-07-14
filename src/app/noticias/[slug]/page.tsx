@@ -36,6 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: result.story.summary,
         type: "article",
         publishedTime: result.story.publishedAt,
+        siteName: "El Facto Noticias",
       },
     };
   }
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: "article",
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
+      siteName: "El Facto Noticias",
       images: article.coverUrl ? [{ url: article.coverUrl, alt: article.coverAlt ?? article.title }] : undefined,
     },
   };
@@ -73,7 +75,7 @@ function LiveArticle({ article }: { article: PublicArticle }) {
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     author: { "@type": "Person", name: article.authorName },
-    publisher: { "@type": "Organization", name: "El Facto Media Group" },
+    publisher: { "@type": "Organization", name: "El Facto Noticias" },
     mainEntityOfPage: article.canonicalUrl ?? `/noticias/${article.slug}`,
   };
 
@@ -81,7 +83,7 @@ function LiveArticle({ article }: { article: PublicArticle }) {
     <main className="article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <header className="article-header">
-        <Link href="/" className="public-logo">EL FACTO<span>MEDIA GROUP</span></Link>
+        <Link href="/" className="public-logo">EL FACTO<span>NOTICIAS</span></Link>
         <Link href="/">Volver a portada</Link>
       </header>
       <article>
@@ -110,7 +112,7 @@ function LiveArticle({ article }: { article: PublicArticle }) {
         </div>
         <section className="article-transparency">
           <span className="eyebrow">ORIGEN Y TRANSPARENCIA</span>
-          <h2>Esta nota nació de una publicación revisada por El Facto.</h2>
+          <h2>Esta nota nació de una publicación revisada por El Facto Noticias.</h2>
           <p>El contenido audiovisual fue transcrito y adaptado al formato web. La aprobación final permanece en manos del equipo editorial.</p>
           <a href={article.instagramPermalink} target="_blank" rel="noreferrer">Ver Reel original <ExternalLink size={15} /></a>
         </section>
@@ -135,14 +137,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     datePublished: story.publishedAt,
     dateModified: story.updatedAt,
     author: { "@type": "Person", name: story.author },
-    publisher: { "@type": "Organization", name: "El Facto Media Group" },
+    publisher: { "@type": "Organization", name: "El Facto Noticias" },
     mainEntityOfPage: `/noticias/${story.slug}`,
   };
 
   return (
     <main className="article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <header className="article-header"><Link href="/" className="public-logo">EL FACTO<span>MEDIA GROUP</span></Link><Link href="/">Volver a portada</Link></header>
+      <header className="article-header"><Link href="/" className="public-logo">EL FACTO<span>NOTICIAS</span></Link><Link href="/">Volver a portada</Link></header>
       <article>
         <span className="section-label">{story.category}</span>
         <h1>{story.title}</h1>
