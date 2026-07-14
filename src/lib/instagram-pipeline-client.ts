@@ -26,6 +26,17 @@ export type InstagramEngineItem = {
   slug: string;
 };
 
+export type InstagramSyncResult = {
+  ok?: boolean;
+  sync_mode?: "initial_backfill" | "backfill" | "incremental";
+  initial_backfill_days?: number | null;
+  incremental_overlap_minutes?: number | null;
+  fetched?: number;
+  created?: number;
+  refreshed?: number;
+  ignored_older?: number;
+};
+
 type JobRelation = { progress?: number | null; stage?: string | null };
 type TranscriptRelation = { transcript?: string | null };
 type DraftRelation = {
@@ -183,14 +194,18 @@ export async function loadInstagramEngineItems() {
   return { mode: "live" as const, items, error: null };
 }
 
-export async function requestInstagramSync(backfillDays = 7) {
+export async function requestInstagramSync() {
   const client = createClient();
   if (!client) return { ok: false as const, reason: "not_configured" as const };
   const { data: sessionData } = await client.auth.getSession();
   if (!sessionData.session) return { ok: false as const, reason: "not_authenticated" as const };
   const { data, error } = await client.functions.invoke("instagram-sync", {
-    body: { backfill_days: backfillDays, max_pages: 20 },
+    body: {
+      mode: "auto",
+      initial_backfill_days: 7,
+      overlap_minutes: 10,
+    },
   });
   if (error) return { ok: false as const, reason: "sync_failed" as const, error: error.message };
-  return { ok: true as const, data };
+  return { ok: true as const, data: data as InstagramSyncResult };
 }
