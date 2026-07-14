@@ -21,26 +21,6 @@ jobs:
         with:
           show-progress: false
 
-      - name: Create source snapshot
-        run: tar -czf source-snapshot.tgz src docs scripts README.md package.json .github supabase next.config.ts
-
-      - name: Upload source snapshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-snapshot
-          path: source-snapshot.tgz
-          if-no-files-found: error
-
-      - name: Generate branding report
-        run: node scripts/check-branding.mjs > branding-report.txt 2>&1 || true
-
-      - name: Upload branding report
-        uses: actions/upload-artifact@v4
-        with:
-          name: branding-report
-          path: branding-report.txt
-          if-no-files-found: error
-
       - name: Validate El Facto Noticias branding
         run: node scripts/check-branding.mjs
 
