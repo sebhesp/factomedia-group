@@ -24,7 +24,7 @@ jobs:
       - name: 2. Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: 3. Install dependencies
         run: npm install --no-audit --no-fund
@@ -37,16 +37,29 @@ jobs:
           npm run lint
           npm test
 
-      - name: 5. Build static website
+      - name: 5. Prepare static route configuration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/app/noticias/[slug]/page.tsx')
+          text = path.read_text()
+          expected = 'export const dynamicParams = true;'
+          if expected not in text:
+              raise SystemExit('Dynamic route marker not found')
+          path.write_text(text.replace(expected, 'export const dynamicParams = false;', 1))
+          PY
+
+      - name: 6. Build static website
         env:
           GITHUB_ACTIONS: "true"
           CI: "true"
         run: |
           npm run build
           test -f out/index.html
+          test -f out/instagram/index.html
           touch out/.nojekyll
 
-      - name: 6. Publish gh-pages branch
+      - name: 7. Publish gh-pages branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
