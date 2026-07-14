@@ -61,6 +61,14 @@ jobs:
         run: npm test
 
       - name: Build static application
-        run: npm run build
+        run: npm run build 2>&1 | tee build-report.txt
         env:
           GITHUB_ACTIONS: "true"
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: build-report.txt
+          if-no-files-found: ignore
