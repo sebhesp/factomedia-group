@@ -1,0 +1,61 @@
+name: Publish current El Facto Noticias preview
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-el-facto-pages-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout preview branch
+        uses: actions/checkout@v4
+        with:
+          ref: ops/publish-current-main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate
+        run: |
+          npm run check:branding
+          npm run typecheck
+          npm run lint
+          npm test
+
+      - name: Build static site
+        env:
+          GITHUB_ACTIONS: "true"
+          CI: "true"
+        run: |
+          npm run build
+          test -f out/index.html
+          test -f out/instagram/index.html
+          touch out/.nojekyll
+
+      - name: Publish gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd out
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Deploy Instagram copy workspace"
+          git branch -M gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
