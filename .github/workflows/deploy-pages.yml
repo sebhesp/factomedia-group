@@ -1,4 +1,4 @@
-name: Build and publish Factomedia
+name: Build and publish El Facto Noticias
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: factomedia-pages
+  group: el-facto-noticias-pages
   cancel-in-progress: true
 
 jobs:
@@ -29,8 +29,9 @@ jobs:
       - name: 3. Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: 4. Validate code
+      - name: 4. Validate code and branding
         run: |
+          npm run check:branding
           npm run typecheck
           npm run lint
           npm test
@@ -53,7 +54,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add --all
-          git commit -m "Deploy Factomedia static site"
+          git commit -m "Deploy El Facto Noticias static site"
           git branch -M gh-pages
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin gh-pages
