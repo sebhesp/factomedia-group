@@ -3,115 +3,177 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
-  CheckCircle2,
-  CircleAlert,
-  Clock3,
-  FileText,
+  Check,
+  Copy,
+  ExternalLink,
   Camera as Instagram,
-  Mic2,
   RefreshCw,
-  SearchCheck,
-  Sparkles,
-  UserRoundCheck,
-  Video,
+  Search,
 } from "lucide-react";
-import { Card } from "@/components/ui";
 import { trackProductEvent } from "@/lib/product-intelligence";
 import {
   loadInstagramEngineItems,
   requestInstagramSync,
   type InstagramEngineItem,
+  type InstagramEngineStage,
 } from "@/lib/instagram-pipeline-client";
 
-const stages = {
-  detected: { label: "Detectado", icon: Instagram, tone: "neutral" },
-  transcribing: { label: "Transcribiendo", icon: Mic2, tone: "progress" },
-  researching: { label: "Buscando contexto", icon: SearchCheck, tone: "progress" },
-  review: { label: "Necesita revisión", icon: CircleAlert, tone: "warning" },
-  ready: { label: "Nota lista", icon: CheckCircle2, tone: "success" },
-  published: { label: "Publicada", icon: FileText, tone: "success" },
-} as const;
+const stageLabels: Record<InstagramEngineStage, string> = {
+  detected: "Detectado",
+  transcribing: "Transcribiendo",
+  researching: "Preparando nota",
+  review: "Listo para revisar",
+  ready: "Aprobado",
+  published: "Publicado",
+};
 
 const initialReels: InstagramEngineItem[] = [
   {
     id: "ig-001",
     title: "Congreso abre discusión sobre reducción de la jornada laboral",
     publishedAgo: "hace 4 min",
+    publishedAt: "2026-07-13T20:16:00-06:00",
     presenter: "Ilse Mariana Reyes Valle",
     duration: "01:18",
     stage: "review",
-    progress: 92,
-    note: "El Reel ya fue revisado por El Facto Noticias. La nota está redactada; falta decidir si se añade una cifra externa.",
+    progress: 100,
+    note: "La información ya está estructurada y lista para copiar o revisar.",
     externalMatches: 3,
     timingComparison: "El Facto Noticias publicó 6 min antes que el primer medio comparable",
+    sourceUrl: "https://www.instagram.com/elfactonoticias/",
+    caption: "El Congreso abrió la discusión sobre la reducción de la jornada laboral. La propuesta plantea una transición gradual y mantiene pendiente la definición de plazos y sectores.",
+    transcript: "El Congreso comenzó la discusión sobre la reducción de la jornada laboral. La propuesta busca pasar de 48 a 40 horas semanales mediante una transición gradual. Todavía deben definirse los plazos, los sectores y la forma en que se aplicará.",
+    dek: "La propuesta contempla una transición gradual de 48 a 40 horas semanales; los plazos y mecanismos de aplicación siguen en discusión.",
+    lead: "El Congreso abrió la discusión sobre la reducción de la jornada laboral, una propuesta que busca disminuir de 48 a 40 las horas de trabajo semanales.",
+    body: "El Congreso abrió la discusión sobre la reducción de la jornada laboral, una propuesta que busca disminuir de 48 a 40 las horas de trabajo semanales.\n\nEl planteamiento considera una transición gradual. Durante el proceso legislativo deberán definirse los plazos, los sectores involucrados y los mecanismos de aplicación.\n\nLa discusión tendrá impacto directo en las condiciones laborales, la organización de las empresas y el tiempo disponible para cuidados, descanso y vida personal.",
+    context: "La reducción de la jornada forma parte de una discusión más amplia sobre productividad, derechos laborales y distribución del tiempo de trabajo.",
+    seoTitle: "Congreso discute reducción de la jornada laboral a 40 horas",
+    seoDescription: "El Congreso abrió la discusión para reducir la jornada laboral de 48 a 40 horas semanales mediante una transición gradual.",
+    slug: "congreso-discute-reduccion-jornada-laboral-40-horas",
   },
   {
     id: "ig-002",
     title: "Servicio provisional en dos estaciones de la Línea 3",
     publishedAgo: "hace 11 min",
+    publishedAt: "2026-07-13T20:09:00-06:00",
     presenter: "Pavel Martínez Gaona",
     duration: "00:54",
     stage: "ready",
     progress: 100,
-    note: "Origen editorial revisado. Transcripción, autor, portada y nota listas para aprobación.",
+    note: "Nota aprobada y lista para publicación web.",
     externalMatches: 4,
-    timingComparison: "El Facto Noticias estuvo entre las primeras 3 cuentas en publicarlo",
+    timingComparison: "El Facto Noticias estuvo entre las primeras tres cuentas en publicarlo",
+    sourceUrl: "https://www.instagram.com/elfactonoticias/",
+    caption: "Se estableció servicio provisional en dos estaciones de la Línea 3. Autoridades pidieron anticipar traslados y seguir los avisos oficiales.",
+    transcript: "Hay servicio provisional en dos estaciones de la Línea 3. Las autoridades recomendaron anticipar los traslados y consultar los avisos oficiales mientras continúan las labores.",
+    dek: "Las autoridades recomendaron anticipar traslados y consultar los avisos oficiales mientras continúan las labores.",
+    lead: "Dos estaciones de la Línea 3 operan con servicio provisional, de acuerdo con la información difundida por las autoridades.",
+    body: "Dos estaciones de la Línea 3 operan con servicio provisional.\n\nLas autoridades recomendaron a las personas usuarias anticipar sus traslados y consultar los avisos oficiales mientras continúan las labores.\n\nLa duración de la afectación no fue precisada en el material publicado.",
+    context: "La información puede cambiar conforme avancen las labores, por lo que la nota debe conservar la hora de actualización.",
+    seoTitle: "Línea 3 opera con servicio provisional en dos estaciones",
+    seoDescription: "Dos estaciones de la Línea 3 tienen servicio provisional. Autoridades pidieron anticipar traslados y revisar avisos oficiales.",
+    slug: "linea-3-servicio-provisional-dos-estaciones",
   },
   {
     id: "ig-003",
     title: "Qué implica la nueva política de vivienda para las familias",
     publishedAgo: "hace 18 min",
+    publishedAt: "2026-07-13T20:02:00-06:00",
     presenter: "José Jesús López Lagos",
     duration: "01:32",
     stage: "researching",
     progress: 72,
-    note: "La nota ya puede generarse. El sistema busca antecedentes y posibles contradicciones para enriquecerla.",
+    note: "La transcripción está lista; la nota y el contexto siguen en proceso.",
     externalMatches: 5,
     timingComparison: "Se detectaron publicaciones previas; se está comparando el contexto",
+    sourceUrl: "https://www.instagram.com/elfactonoticias/",
+    caption: "La nueva política de vivienda plantea cambios en acceso, financiamiento y construcción. Te explicamos qué puede significar para las familias.",
+    transcript: "La nueva política de vivienda plantea cambios en el acceso, el financiamiento y la construcción. El alcance para las familias dependerá de las reglas de operación y de quiénes puedan acceder a los programas.",
+    dek: "",
+    lead: "",
+    body: "",
+    context: "",
+    seoTitle: "",
+    seoDescription: "",
+    slug: "",
   },
   {
     id: "ig-004",
     title: "Inflación mensual y cambios en la canasta básica",
     publishedAgo: "hace 27 min",
+    publishedAt: "2026-07-13T19:53:00-06:00",
     presenter: null,
     duration: "00:47",
     stage: "transcribing",
     progress: 38,
-    note: "Procesando audio, caption y texto visible. El contenido de Instagram es el origen editorial de la nota.",
+    note: "El audio y el texto visible se están procesando.",
     externalMatches: 2,
     timingComparison: "Comparación temporal pendiente",
-  },
-  {
-    id: "ig-005",
-    title: "Museos públicos amplían horarios durante vacaciones",
-    publishedAgo: "hace 41 min",
-    presenter: "Nadia Valentina Báez Patiño",
-    duration: "00:42",
-    stage: "published",
-    progress: 100,
-    note: "Nota publicada desde el Reel y métricas sincronizadas.",
-    externalMatches: 3,
-    timingComparison: "El Facto Noticias publicó 12 min antes que la mediana detectada",
+    sourceUrl: "https://www.instagram.com/elfactonoticias/",
+    caption: "Revisamos los cambios mensuales de inflación y su efecto en productos de la canasta básica.",
+    transcript: "",
+    dek: "",
+    lead: "",
+    body: "",
+    context: "",
+    seoTitle: "",
+    seoDescription: "",
+    slug: "",
   },
 ];
 
 type DataMode = "loading" | "demo" | "live";
 
+type CopyFieldProps = {
+  fieldKey: string;
+  label: string;
+  value: string;
+  copiedKey: string | null;
+  onCopy: (key: string, value: string) => void;
+  wide?: boolean;
+};
+
+function CopyField({ fieldKey, label, value, copiedKey, onCopy, wide = false }: CopyFieldProps) {
+  const available = Boolean(value.trim());
+  return (
+    <section className={`ig-copy-field${wide ? " wide" : ""}`}>
+      <header>
+        <span>{label}</span>
+        <button type="button" onClick={() => onCopy(fieldKey, value)} disabled={!available} aria-label={`Copiar ${label}`}>
+          {copiedKey === fieldKey ? <Check size={14} /> : <Copy size={14} />}
+          {copiedKey === fieldKey ? "Copiado" : "Copiar"}
+        </button>
+      </header>
+      <div className={!available ? "empty" : ""}>{available ? value : "Pendiente de procesamiento"}</div>
+    </section>
+  );
+}
+
+function formatPublishedAt(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("es-MX", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
 export function InstagramEngine() {
   const [items, setItems] = useState<InstagramEngineItem[]>(initialReels);
+  const [selectedId, setSelectedId] = useState(initialReels[0]?.id ?? "");
+  const [query, setQuery] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [dataMode, setDataMode] = useState<DataMode>("loading");
   const [connectionNote, setConnectionNote] = useState("Comprobando conexión…");
-  const needsAction = useMemo(() => items.filter((item) => item.stage === "review" || item.stage === "ready"), [items]);
-  const published = useMemo(() => items.filter((item) => item.stage === "published").length, [items]);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const loadLiveData = useCallback(async (showStatus = true) => {
     const result = await loadInstagramEngineItems();
     if (result.mode === "live") {
-      if (result.items.length) setItems(result.items);
+      setItems(result.items);
+      setSelectedId((current) => result.items.some((item) => item.id === current) ? current : result.items[0]?.id ?? "");
       setDataMode("live");
-      if (showStatus) setConnectionNote(result.items.length ? "Datos reales sincronizados" : "Conectado · todavía no hay Reels importados");
+      if (showStatus) setConnectionNote(result.items.length ? "Datos reales sincronizados" : "Conectado · todavía no hay posts importados");
       return true;
     }
     setDataMode("demo");
@@ -123,29 +185,82 @@ export function InstagramEngine() {
     void loadLiveData();
   }, [loadLiveData]);
 
+  const filteredItems = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) return items;
+    return items.filter((item) => [item.title, item.caption, item.presenter ?? "", stageLabels[item.stage]].join(" ").toLowerCase().includes(normalized));
+  }, [items, query]);
+
+  const selected = items.find((item) => item.id === selectedId) ?? filteredItems[0] ?? null;
+  const readyCount = items.filter((item) => item.stage === "review" || item.stage === "ready").length;
+
+  async function copyText(key: string, value: string) {
+    if (!value.trim()) return;
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+    setCopiedKey(key);
+    window.setTimeout(() => setCopiedKey((current) => current === key ? null : current), 1400);
+    trackProductEvent("instagram_copy_field", { field: key, media_id: selected?.id ?? null });
+  }
+
+  function copyCompleteNote(item: InstagramEngineItem) {
+    const sections = [
+      ["TÍTULO", item.title],
+      ["BAJADA", item.dek],
+      ["LEAD", item.lead],
+      ["CUERPO", item.body],
+      ["CONTEXTO", item.context],
+      ["AUTOR", item.presenter ?? "Por confirmar"],
+      ["SEO TITLE", item.seoTitle],
+      ["SEO DESCRIPTION", item.seoDescription],
+      ["SLUG", item.slug],
+      ["FUENTE", item.sourceUrl],
+    ].filter(([, value]) => value.trim());
+    void copyText("complete", sections.map(([label, value]) => `${label}\n${value}`).join("\n\n"));
+  }
+
   function simulateSync() {
+    const id = `ig-${Date.now()}`;
     setSyncing(true);
-    trackProductEvent("instagram_sync_started", { surface: "instagram_engine", demo: true });
     window.setTimeout(() => {
-      setItems((current) => [
-        {
-          id: `ig-${Date.now()}`,
-          title: "Nuevo Reel detectado: actualización política en desarrollo",
-          publishedAgo: "ahora",
-          presenter: null,
-          duration: "00:36",
-          stage: "detected",
-          progress: 8,
-          note: "Origen editorial detectado. Esperando importación de caption, video y miniatura.",
-          externalMatches: 0,
-          timingComparison: "Buscando publicaciones comparables",
-        },
-        ...current,
-      ]);
+      const newItem: InstagramEngineItem = {
+        id,
+        title: "Nuevo post detectado en Instagram",
+        publishedAgo: "ahora",
+        publishedAt: new Date().toISOString(),
+        presenter: null,
+        duration: "REEL",
+        stage: "detected",
+        progress: 5,
+        note: "Post detectado; el procesamiento comenzará automáticamente.",
+        externalMatches: 0,
+        timingComparison: "Comparación temporal pendiente",
+        sourceUrl: "https://www.instagram.com/elfactonoticias/",
+        caption: "",
+        transcript: "",
+        dek: "",
+        lead: "",
+        body: "",
+        context: "",
+        seoTitle: "",
+        seoDescription: "",
+        slug: "",
+      };
+      setItems((current) => [newItem, ...current]);
+      setSelectedId(id);
       setSyncing(false);
-      setConnectionNote("Demo actualizada con un Reel simulado");
-      trackProductEvent("instagram_sync_completed", { surface: "instagram_engine", demo: true, new_items: 1 });
-    }, 900);
+      setConnectionNote("Demo actualizada con un post simulado");
+    }, 700);
   }
 
   async function syncInstagram() {
@@ -153,109 +268,133 @@ export function InstagramEngine() {
       simulateSync();
       return;
     }
-
     setSyncing(true);
     setConnectionNote("Consultando Instagram…");
-    trackProductEvent("instagram_sync_started", { surface: "instagram_engine", demo: false });
     const result = await requestInstagramSync();
     if (!result.ok) {
-      setConnectionNote(result.reason === "not_authenticated" ? "Inicia sesión para sincronizar" : "No se pudo sincronizar; revisa la configuración del backend");
+      setConnectionNote(result.reason === "not_authenticated" ? "Inicia sesión para sincronizar" : "No se pudo sincronizar; revisa el backend");
       setSyncing(false);
-      trackProductEvent("instagram_sync_failed", { surface: "instagram_engine", reason: result.reason });
       return;
     }
-
     await loadLiveData(false);
     setConnectionNote("Instagram sincronizado correctamente");
     setSyncing(false);
-    trackProductEvent("instagram_sync_completed", { surface: "instagram_engine", demo: false });
   }
 
   return (
-    <div className="instagram-engine">
-      <section className="instagram-engine-hero">
+    <div className="ig-copy-desk">
+      <header className="ig-desk-header">
         <div>
-          <span className="eyebrow"><Instagram size={15} /> INSTAGRAM ES EL ORIGEN EDITORIAL</span>
-          <h1>De Reel revisado a nota, sin repetir el trabajo.</h1>
-          <p>El Facto Noticias confía en el contenido publicado por @elfactonoticias como origen editorial revisado. El sistema transcribe, estructura y prepara la nota; las fuentes externas aportan contexto, contradicciones y comparación de tiempos.</p>
+          <span className="ig-kicker"><Instagram size={15} /> @elfactonoticias</span>
+          <h1>Información de Instagram</h1>
+          <p>Selecciona un post y copia únicamente el bloque que necesitas.</p>
         </div>
-        <Card className="instagram-account-card">
-          <div className="instagram-account-heading">
-            <span className="instagram-account-mark"><Instagram size={19} /></span>
-            <div><strong>@elfactonoticias</strong><small>Origen editorial confiable · {dataMode === "live" ? "CONECTADO" : dataMode === "loading" ? "CONECTANDO" : "DEMO"}</small></div>
-          </div>
-          <div className="instagram-account-state"><i /> {connectionNote}</div>
-          <button type="button" className="button button-primary" onClick={() => void syncInstagram()} disabled={syncing || dataMode === "loading"}>
-            <RefreshCw size={15} className={syncing ? "spin" : ""} /> {syncing ? "Buscando Reels…" : dataMode === "live" ? "Sincronizar Instagram" : "Simular sincronización"}
+        <div className="ig-header-tools">
+          <label className="ig-search">
+            <Search size={16} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar posts" aria-label="Buscar posts" />
+          </label>
+          <button type="button" className="ig-sync-button" onClick={() => void syncInstagram()} disabled={syncing || dataMode === "loading"}>
+            <RefreshCw size={15} className={syncing ? "spin" : ""} />
+            {syncing ? "Sincronizando" : "Sincronizar"}
           </button>
-        </Card>
-      </section>
+        </div>
+      </header>
 
-      <section className="instagram-engine-kpis" aria-label="Estado del motor editorial">
-        <Card><span>REELS EN BANDEJA</span><strong>{items.length}</strong><small>{dataMode === "live" ? "importados desde Instagram" : "demostración operativa"}</small></Card>
-        <Card><span>EN PROCESO</span><strong>{items.filter((item) => ["detected", "transcribing", "researching"].includes(item.stage)).length}</strong><small>sin repetir revisión editorial</small></Card>
-        <Card><span>NECESITAN ACCIÓN</span><strong>{needsAction.length}</strong><small>edición o aprobación final</small></Card>
-        <Card><span>PUBLICADAS</span><strong>{published}</strong><small>con origen y tiempos registrados</small></Card>
-      </section>
+      <div className="ig-connection-line">
+        <span className={`ig-mode-dot ${dataMode}`} />
+        <span>{connectionNote}</span>
+        <b>{items.length} posts</b>
+        <b>{readyCount} listos para revisión</b>
+      </div>
 
-      <div className="instagram-engine-layout">
-        <main>
-          <div className="instagram-section-heading"><div><span className="eyebrow">BANDEJA EDITORIAL</span><h2>Últimos Reels detectados</h2></div><small>Ordenados por la acción que requieren</small></div>
-          <div className="instagram-reel-list">
-            {items.map((item) => {
-              const config = stages[item.stage];
-              const Icon = config.icon;
-              return (
-                <Card className="instagram-reel-row" key={item.id}>
-                  <div className="instagram-reel-preview"><Video size={21} /><span>{item.duration}</span></div>
-                  <div className="instagram-reel-copy">
-                    <div className="instagram-reel-meta"><span>{item.publishedAgo}</span><span>{item.presenter ?? "Autor por confirmar"}</span></div>
-                    <h3>{item.title}</h3>
-                    <p>{item.note}</p>
-                    <p><strong>{item.externalMatches} coincidencias externas</strong> · {item.timingComparison}</p>
-                    <div className="instagram-progress"><i><b style={{ width: `${item.progress}%` }} /></i><span>{item.progress}%</span></div>
-                  </div>
-                  <div className="instagram-reel-action">
-                    <span className={`instagram-stage ${config.tone}`}><Icon size={14} /> {config.label}</span>
-                    {item.stage === "review" || item.stage === "ready" ? (
-                      <Link href={`/desk/noticias/sala?id=${item.id}`} className="button button-primary" data-track-event="story_opened" data-track-source="instagram_engine">
-                        {item.stage === "ready" ? "Aprobar nota" : "Revisar nota"} <ArrowRight size={15} />
-                      </Link>
-                    ) : item.stage === "published" ? (
-                      <Link href="/registro" className="button button-ghost">Ver registro <ArrowRight size={15} /></Link>
-                    ) : (
-                      <span className="instagram-auto-note"><Clock3 size={14} /> El sistema continúa automáticamente</span>
-                    )}
-                  </div>
-                </Card>
-              );
-            })}
+      <div className="ig-copy-layout">
+        <aside className="ig-post-panel" aria-label="Posts de Instagram">
+          <div className="ig-panel-title">
+            <strong>Posts</strong>
+            <span>{filteredItems.length}</span>
           </div>
-        </main>
-
-        <aside className="instagram-engine-rail">
-          <Card className="instagram-next-card">
-            <span className="eyebrow">SIGUIENTE ACCIÓN</span>
-            <h2>{needsAction.length ? "Revisar una sola nota." : "La bandeja está al día."}</h2>
-            <p>{needsAction.length ? "No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram." : "El Facto Noticias continuará procesando los nuevos Reels en cuanto aparezcan."}</p>
-            {needsAction[0] ? <Link href={`/desk/noticias/sala?id=${needsAction[0].id}`} className="button button-primary">Continuar revisión <ArrowRight size={15} /></Link> : null}
-          </Card>
-
-          <Card>
-            <span className="eyebrow">QUÉ HACE LA IA</span>
-            <div className="instagram-capabilities">
-              <span><Mic2 size={15} /> Transcribe el audio</span>
-              <span><Sparkles size={15} /> Convierte el Reel en nota</span>
-              <span><SearchCheck size={15} /> Añade contexto y compara horarios</span>
-              <span><UserRoundCheck size={15} /> Conserva autoría sin reconocimiento facial</span>
-            </div>
-          </Card>
-
-          <Card className="instagram-guardrail-card">
-            <CircleAlert size={19} />
-            <div><strong>Confiamos en el origen, no en las invenciones.</strong><p>La IA puede reutilizar lo aprobado en Instagram, pero no agregar hechos materiales sin respaldo ni publicar sola.</p></div>
-          </Card>
+          <div className="ig-post-list">
+            {filteredItems.map((item) => (
+              <button type="button" key={item.id} className={`ig-post-item${selected?.id === item.id ? " active" : ""}`} onClick={() => setSelectedId(item.id)}>
+                <div className="ig-post-item-top">
+                  <span className={`ig-stage-dot ${item.stage}`} />
+                  <span>{stageLabels[item.stage]}</span>
+                  <time>{item.publishedAgo}</time>
+                </div>
+                <strong>{item.title}</strong>
+                <div className="ig-post-item-meta">
+                  <span>{item.presenter ?? "Autor por confirmar"}</span>
+                  <span>{item.duration}</span>
+                </div>
+                {item.progress < 100 ? <i className="ig-mini-progress"><b style={{ width: `${item.progress}%` }} /></i> : null}
+              </button>
+            ))}
+            {!filteredItems.length ? <p className="ig-list-empty">No hay posts que coincidan con la búsqueda.</p> : null}
+          </div>
         </aside>
+
+        <main className="ig-detail-panel">
+          {selected ? (
+            <>
+              <header className="ig-detail-header">
+                <div>
+                  <div className="ig-detail-meta">
+                    <span className={`ig-status-pill ${selected.stage}`}>{stageLabels[selected.stage]}</span>
+                    <span>{formatPublishedAt(selected.publishedAt)}</span>
+                    <span>{selected.presenter ?? "Autor por confirmar"}</span>
+                  </div>
+                  <h2>{selected.title}</h2>
+                  <p>{selected.note}</p>
+                </div>
+                <div className="ig-detail-actions">
+                  <a href={selected.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} /> Ver post</a>
+                  <button type="button" onClick={() => copyCompleteNote(selected)}>
+                    {copiedKey === "complete" ? <Check size={15} /> : <Copy size={15} />}
+                    {copiedKey === "complete" ? "Nota copiada" : "Copiar nota completa"}
+                  </button>
+                  {(selected.stage === "review" || selected.stage === "ready") ? <Link href={`/desk/noticias/sala?id=${selected.id}`}>Abrir revisión</Link> : null}
+                </div>
+              </header>
+
+              <div className="ig-section-heading">
+                <h3>Origen</h3>
+                <span>Información capturada directamente del post</span>
+              </div>
+              <div className="ig-field-grid">
+                <CopyField fieldKey="caption" label="Caption original" value={selected.caption} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+                <CopyField fieldKey="transcript" label="Transcripción" value={selected.transcript} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+              </div>
+
+              <div className="ig-section-heading">
+                <h3>Nota lista para usar</h3>
+                <span>Cada bloque se puede copiar por separado</span>
+              </div>
+              <div className="ig-field-grid">
+                <CopyField fieldKey="title" label="Título" value={selected.title} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="dek" label="Bajada" value={selected.dek} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="lead" label="Lead" value={selected.lead} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+                <CopyField fieldKey="body" label="Cuerpo de la nota" value={selected.body} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+                <CopyField fieldKey="context" label="Contexto" value={selected.context} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+              </div>
+
+              <div className="ig-section-heading">
+                <h3>Publicación y SEO</h3>
+                <span>Datos operativos del contenido</span>
+              </div>
+              <div className="ig-field-grid compact">
+                <CopyField fieldKey="author" label="Autor" value={selected.presenter ?? ""} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="source" label="URL de Instagram" value={selected.sourceUrl} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="seo-title" label="SEO title" value={selected.seoTitle} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="slug" label="Slug" value={selected.slug} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} />
+                <CopyField fieldKey="seo-description" label="SEO description" value={selected.seoDescription} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+                <CopyField fieldKey="timing" label="Comparación de horarios" value={`${selected.timingComparison}. Coincidencias externas: ${selected.externalMatches}.`} copiedKey={copiedKey} onCopy={(key, value) => void copyText(key, value)} wide />
+              </div>
+            </>
+          ) : (
+            <div className="ig-detail-empty">Selecciona un post para consultar su información.</div>
+          )}
+        </main>
       </div>
     </div>
   );

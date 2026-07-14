@@ -18,6 +18,7 @@ export type ProductEventName =
   | "instagram_sync_started"
   | "instagram_sync_completed"
   | "instagram_sync_failed"
+  | "instagram_copy_field"
   | "radar_opened"
   | "radar_search_started"
   | "radar_search_completed"
