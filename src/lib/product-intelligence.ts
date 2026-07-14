@@ -15,6 +15,9 @@ export type ProductEventName =
   | "ai_suggestion_shown"
   | "ai_suggestion_accepted"
   | "ai_suggestion_rejected"
+  | "instagram_sync_started"
+  | "instagram_sync_completed"
+  | "instagram_sync_failed"
   | "radar_opened"
   | "radar_search_started"
   | "radar_search_completed"
@@ -63,10 +66,10 @@ export interface ProductInsight {
   evidence: string;
 }
 
-const EVENT_KEY = "factomedia:product-events";
-const FEEDBACK_KEY = "factomedia:product-feedback";
-const VISITOR_KEY = "factomedia:visitor-id";
-const SESSION_KEY = "factomedia:session-id";
+const EVENT_KEY = "el-facto-noticias:product-events";
+const FEEDBACK_KEY = "el-facto-noticias:product-feedback";
+const VISITOR_KEY = "el-facto-noticias:visitor-id";
+const SESSION_KEY = "el-facto-noticias:session-id";
 const MAX_LOCAL_EVENTS = 1200;
 const MAX_LOCAL_FEEDBACK = 250;
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "development";
@@ -159,7 +162,7 @@ export function trackProductEvent(name: ProductEventName, properties: ProductEve
   const events = readArray<ProductEvent>(EVENT_KEY);
   events.push(event);
   writeArray(EVENT_KEY, events, MAX_LOCAL_EVENTS);
-  window.dispatchEvent(new CustomEvent("factomedia:product-event", { detail: event }));
+  window.dispatchEvent(new CustomEvent("el-facto-noticias:product-event", { detail: event }));
   deliver(event, "event");
   return event;
 }
@@ -179,7 +182,7 @@ export function submitProductFeedback(input: Omit<ProductFeedback, "id" | "occur
   records.push(feedback);
   writeArray(FEEDBACK_KEY, records, MAX_LOCAL_FEEDBACK);
   trackProductEvent("feedback_submitted", { score: feedback.score, category: feedback.category });
-  window.dispatchEvent(new CustomEvent("factomedia:feedback-submitted", { detail: feedback }));
+  window.dispatchEvent(new CustomEvent("el-facto-noticias:feedback-submitted", { detail: feedback }));
   deliver(feedback, "feedback");
   return feedback;
 }

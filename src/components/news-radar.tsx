@@ -120,7 +120,7 @@ export function NewsRadar() {
       slug: slugify(cluster.title),
       title: cluster.title,
       summary: summaryFromCluster(cluster),
-      body: `Señal localizada por Factomedia Radar.\n\nEstado: ${statusCopy[cluster.verificationStatus].label}.\n${cluster.verificationReason}\n\nLa información debe revisarse antes de publicar.`,
+      body: `Señal localizada por Radar de noticias.\n\nEstado: ${statusCopy[cluster.verificationStatus].label}.\n${cluster.verificationReason}\n\nLa información debe revisarse antes de publicar.`,
       category: scope === "ciudad" ? "Ciudad" : scope === "politica" ? "Política" : scope === "economia" ? "Economía" : "Actualidad",
       status: cluster.verificationStatus === "confirmed" || cluster.verificationStatus === "corroborated" ? "verification" : "waiting_information",
       author: "Mariana Torres",
@@ -161,7 +161,7 @@ export function NewsRadar() {
       <header className="radar-header">
         <div>
           <Link href="/mi-dia" className="radar-back" data-track-event="navigation_used" data-track-id="radar-back" data-track-destination="mi-dia"><ArrowLeft size={15} /> Volver a Mi mesa</Link>
-          <span className="eyebrow">FACTOMEDIA RADAR</span>
+          <span className="eyebrow">RADAR DE NOTICIAS</span>
           <h1>Buscar noticia</h1>
           <p>Detecta cobertura de los últimos minutos, agrupa fuentes y muestra qué puede sostenerse y qué sigue pendiente.</p>
         </div>
@@ -222,7 +222,7 @@ export function NewsRadar() {
         })}
       </div>
 
-      {!loading && !clusters.length && !error && <Card className="radar-empty"><Search size={30} /><h2>Busca una señal reciente</h2><p>Factomedia no mostrará resultados de relleno. Usa un tema o amplía la ventana temporal.</p></Card>}
+      {!loading && !clusters.length && !error && <Card className="radar-empty"><Search size={30} /><h2>Busca una señal reciente</h2><p>El Facto Noticias no mostrará resultados de relleno. Usa un tema o amplía la ventana temporal.</p></Card>}
 
       <footer className="radar-method"><CheckCircle2 size={17} /><p><strong>Qué significa “confirmada”.</strong> El radar detecta coincidencia entre fuentes, pero la editora conserva la decisión final. Una noticia solo recibe confirmación fuerte cuando hay una fuente primaria u oficial más corroboración independiente.</p></footer>
     </div>

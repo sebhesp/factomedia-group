@@ -1,4 +1,4 @@
-# Checklist del propietario — llevar Factomedia a producción
+# Checklist del propietario — llevar El Facto Noticias a producción
 
 Esta lista indica qué debe resolver Sebastián/El Facto y qué debe quedar implementado antes de considerar el producto listo.
 

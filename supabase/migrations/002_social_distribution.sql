@@ -1,8 +1,8 @@
--- Factomedia social distribution and performance system
+-- El Facto Noticias social distribution and performance system
 -- Depends on 001_initial_schema.sql
 
 create type public.social_platform as enum ('x','instagram','threads');
-create type public.social_origin as enum ('factomedia','native','manual');
+create type public.social_origin as enum ('el_facto','native','manual');
 create type public.social_post_status as enum ('draft','scheduled','published','deleted','error');
 create type public.social_post_format as enum ('alert','update','thread','context','correction','closing','caption','note');
 create type public.social_alert_severity as enum ('info','warning','critical');

@@ -163,7 +163,7 @@ async function createDraft(media: MediaRow, transcript: string, openAIKey: strin
         { role: "system", content: [{ type: "input_text", text: instructions }] },
         { role: "user", content: [{ type: "input_text", text: input }] },
       ],
-      text: { format: { type: "json_schema", name: "factomedia_instagram_note", strict: true, schema } },
+      text: { format: { type: "json_schema", name: "el_facto_noticias_instagram_note", strict: true, schema } },
     }),
     signal: AbortSignal.timeout(120_000),
   });

@@ -2,7 +2,7 @@
 
 ## 1. Auditoría del repositorio
 
-El proyecto se creó desde cero con Next.js App Router y TypeScript estricto. No había código legado que conservar. La base actual incluye una landing pública, acceso interno, FactoDesk, creación progresiva de Noticias Maestras, Sala de Noticia, Redacción en vivo, datos DEMO, esquema Supabase y pruebas.
+El proyecto se creó desde cero con Next.js App Router y TypeScript estricto. No había código legado que conservar. La base actual incluye una landing pública, acceso interno, Redacción, creación progresiva de Noticias Maestras, Sala de Noticia, Redacción en vivo, datos DEMO, esquema Supabase y pruebas.
 
 La app funciona sin servicios externos. En ese modo, los datos creados se guardan en el navegador y están marcados explícitamente como DEMO. Supabase no se presenta como conectado mientras falten sus variables de entorno.
 
@@ -12,7 +12,7 @@ La app funciona sin servicios externos. En ese modo, los datos creados se guarda
 
 - El usuario principal es el colaborador interno.
 - La Noticia Maestra es la unidad central.
-- La edición compleja pertenece a FactoDesk.
+- La edición compleja pertenece a Redacción.
 - La landing debe mostrar solo una proyección pública.
 - La calidad, las fuentes y la trazabilidad son tan importantes como el alcance.
 - El MVP debe reducir carga cognitiva.

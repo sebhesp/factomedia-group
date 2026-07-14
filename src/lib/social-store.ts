@@ -3,7 +3,7 @@
 import { demoSocialPosts } from "@/lib/social-demo-data";
 import type { SocialMetricSnapshot, SocialPost } from "@/lib/social-types";
 
-const STORAGE_KEY = "factomedia-social-posts";
+const STORAGE_KEY = "el-facto-noticias-social-posts";
 
 export function getSocialPosts(): SocialPost[] {
   if (typeof window === "undefined") return demoSocialPosts;

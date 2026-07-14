@@ -5,9 +5,9 @@ export default function LoginPage() {
   return (
     <main className="login-page">
       <section className="login-brand-panel">
-        <Link href="/" className="public-logo public-logo-light">FACTO<span>MEDIA</span></Link>
+        <Link href="/" className="public-logo public-logo-light">EL FACTO<span>NOTICIAS</span></Link>
         <div>
-          <span className="eyebrow eyebrow-light">FACTODESK</span>
+          <span className="eyebrow eyebrow-light">REDACCIÓN</span>
           <h2>La historia completa vive en un solo lugar.</h2>
           <p>Fuentes, versiones, decisiones y resultados editoriales con trazabilidad desde el primer dato.</p>
         </div>

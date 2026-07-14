@@ -35,7 +35,7 @@ export function LoginForm() {
     <div className="login-card">
       <div className="login-heading"><span className="demo-pill">ACCESO INTERNO</span><h1>Tu redacción, sin fricción.</h1><p>Organiza evidencia, verifica afirmaciones y lleva cada historia hasta publicación.</p></div>
       <form action={login} className="form-stack">
-        <label>Correo<Input name="email" type="email" placeholder="nombre@factomedia.mx" required /></label>
+        <label>Correo<Input name="email" type="email" placeholder="nombre@elfactonoticias.com" required /></label>
         <label>Contraseña<Input name="password" type="password" placeholder="••••••••" required /></label>
         {message && <p className="form-message" role="alert">{message}</p>}
         <Button type="submit" disabled={loading}>{loading ? <LoaderCircle className="spin" size={18} /> : <>Entrar <ArrowRight size={18} /></>}</Button>

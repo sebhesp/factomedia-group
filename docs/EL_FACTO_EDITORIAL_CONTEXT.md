@@ -1,6 +1,6 @@
 # El Facto — contexto editorial canónico
 
-Este documento es la fuente de verdad para el tono, las prioridades y los límites editoriales de Factomedia Studio.
+Este documento es la fuente de verdad para el tono, las prioridades y los límites editoriales de El Facto Noticias · Redacción.
 
 ## Propósito
 
@@ -56,7 +56,7 @@ La voz de las notas debe ser:
 
 Los Reels publicados por la cuenta oficial `@elfactonoticias` se consideran un **insumo editorial primario confiable**, porque ya pasaron por el proceso interno de revisión antes de publicarse en Instagram.
 
-Esto significa que Factomedia puede:
+Esto significa que El Facto Noticias puede:
 
 - transcribir el Reel;
 - usar el caption como contexto editorial aprobado;

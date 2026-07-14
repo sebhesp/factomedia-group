@@ -4,8 +4,9 @@ import { FunctionGuide } from "@/components/function-guide";
 import { ProductIntelligenceProvider } from "@/components/product-intelligence-provider";
 
 export const metadata: Metadata = {
-  title: { default: "Factomedia Group", template: "%s · Factomedia" },
-  description: "Información clara, verificada y útil.",
+  title: { default: "El Facto Noticias", template: "%s · El Facto Noticias" },
+  description: "Noticias, análisis y contexto con claridad editorial.",
+  applicationName: "El Facto Noticias",
   formatDetection: { telephone: false, address: false, email: false },
 };
 

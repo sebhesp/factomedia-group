@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-FactoDesk debe permitir que una persona capture, investigue, redacte y entregue una noticia sin memorizar el proceso editorial ni depender de capacitación extensa.
+Redacción debe permitir que una persona capture, investigue, redacte y entregue una noticia sin memorizar el proceso editorial ni depender de capacitación extensa.
 
 La experiencia se diseña alrededor de una regla: **el colaborador siempre debe saber dónde está, qué falta, cuál es la siguiente acción y quién puede ayudarle**.
 

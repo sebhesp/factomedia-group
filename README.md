@@ -1,10 +1,10 @@
-# Factomedia Group — MVP editorial
+# El Facto Noticias — sistema editorial
 
-Factomedia Group es una plataforma interna para colaboradores y editores de un medio digital. El repositorio contiene tres superficies activas:
+El Facto Noticias es una plataforma interna para colaboradores y editores de un medio digital. El repositorio contiene tres superficies activas:
 
-1. **FactoDesk**: operación editorial interna.
-2. **Distribución y rendimiento**: seguimiento de publicaciones sociales creadas dentro y fuera de Factomedia.
-3. **Landing pública**: proyección de Noticias Maestras publicadas.
+1. **Redacción**: operación editorial interna.
+2. **Distribución y rendimiento**: seguimiento de publicaciones sociales creadas dentro y fuera de El Facto Noticias.
+3. **Sitio público**: publicación de notas aprobadas.
 
 La integración por WhatsApp quedó deliberadamente fuera de esta iteración y se realizará al final del proyecto, después de validar producto, seguridad y operación editorial.
 
@@ -12,7 +12,7 @@ La integración por WhatsApp quedó deliberadamente fuera de esta iteración y s
 
 El proyecto puede ejecutarse sin credenciales en **modo DEMO**. Los borradores creados se guardan en `localStorage`, se pueden revisar, aprobar y publicar al cambiar el rol DEMO a Editora o Administradora. Las noticias publicadas localmente aparecen en la portada del mismo navegador.
 
-El módulo de distribución también funciona en modo DEMO. Incluye publicaciones de X, Instagram y Threads, distingue las creadas en Factomedia de las publicadas directamente en cada plataforma, conserva snapshots de métricas, agrupa rendimiento por Noticia Maestra y permite simular nuevas sincronizaciones.
+El módulo de distribución también funciona en modo DEMO. Incluye publicaciones de X, Instagram y Threads, distingue las creadas en El Facto Noticias de las publicadas directamente en cada plataforma, conserva snapshots de métricas, agrupa rendimiento por Noticia Maestra y permite simular nuevas sincronizaciones.
 
 También existe la fundación para Supabase:
 
@@ -121,7 +121,7 @@ npm run test:e2e
 - **Fase 2 — Supabase real:** autenticación, repositorios de datos, Storage y protección de rutas.
 - **Fase 3 — Flujo editorial completo:** versiones, asignaciones, comentarios, correcciones y aprobación persistentes.
 - **Fase 4 — Distribución real:** OAuth, sincronización incremental, publicación, snapshots y reconciliación con X, Instagram y Threads.
-- **Fase 5 — Landing y analítica real:** SEO, imágenes, eventos y reportes.
+- **Fase 5 — Sitio público y analítica real:** SEO, imágenes, eventos y reportes.
 - **Fase 6 — Pruebas, accesibilidad y endurecimiento de seguridad.**
 - **Fase final — WhatsApp:** captura rápida, consultas y acciones simples; nunca edición compleja.
 
@@ -129,9 +129,9 @@ npm run test:e2e
 
 - La interfaz prioriza la siguiente acción y evita formularios largos.
 - Las métricas se presentan como contexto operativo, no como ranking individual.
-- Todo post publicado fuera de Factomedia debe regresar mediante sincronización.
+- Todo post publicado fuera de El Facto Noticias debe regresar mediante sincronización.
 - Una métrica no disponible se muestra como `N/D`, nunca como cero.
 - Las visualizaciones acumuladas entre plataformas no se presentan como personas únicas.
 - Solo editoras, administradoras y dirección pueden aprobar o publicar.
-- La landing consume una proyección pública separada para evitar fugas de información interna.
+- El sitio público consume una proyección separada para evitar fugas de información interna.
 - La IA permanece como asistencia editable y no toma decisiones editoriales.

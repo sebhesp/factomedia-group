@@ -20,7 +20,7 @@ const commands = [
   { label: "Ir a Mi mesa", hint: "Inicio", href: "/mi-dia", icon: Home },
   { label: "Buscar noticias recientes", hint: "Radar verificado", href: "/buscar-noticia", icon: SearchCheck },
   { label: "Crear una noticia", hint: "Captura guiada", href: "/desk/noticias/nueva", icon: FilePlus2 },
-  { label: "Abrir redacción en vivo", hint: "Factomedia Ahora", href: "/redaccion", icon: Radio },
+  { label: "Abrir redacción en vivo", hint: "Ahora", href: "/redaccion", icon: Radio },
   { label: "Revisar distribución", hint: "Posts y métricas", href: "/distribucion", icon: BarChart3 },
   { label: "Ver aprendizajes", hint: "Métricas, feedback y experimentos", href: "/aprendizajes", icon: BrainCircuit },
   { label: "Ver portada pública", hint: "Sitio publicado", href: "/", icon: Newspaper },

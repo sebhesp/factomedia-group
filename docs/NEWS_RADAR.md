@@ -1,4 +1,4 @@
-# Factomedia Radar — búsqueda reciente y verificación
+# Radar de noticias — búsqueda reciente y verificación
 
 ## Objetivo
 

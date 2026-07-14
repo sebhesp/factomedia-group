@@ -148,7 +148,7 @@ const guides: RouteGuide[] = [
     next: "Cambia entre En vivo, Publicaciones, Historias y Alertas; luego abre una publicación individual.",
     features: [
       { title: "En vivo", body: "Resume vistas, interacciones, clics y publicaciones que están creciendo.", icon: BarChart3 },
-      { title: "Publicaciones", body: "Filtra posts por plataforma, origen o texto, incluyendo contenido creado fuera de Factomedia.", icon: ListChecks },
+      { title: "Publicaciones", body: "Filtra posts por plataforma, origen o texto, incluyendo contenido creado fuera de El Facto Noticias.", icon: ListChecks },
       { title: "Historias", body: "Agrupa el rendimiento por Noticia Maestra para leer impacto acumulado.", icon: Newspaper },
       { title: "Alertas", body: "Señala oportunidades, riesgos o publicaciones que requieren seguimiento.", icon: CircleHelp },
       { title: "Sincronizar ahora", body: "Simula la llegada de métricas nuevas y actualiza el tablero de demostración.", icon: Route },
@@ -160,7 +160,7 @@ const guides: RouteGuide[] = [
     summary: "Explica una publicación específica: origen, rendimiento, relación con historia y señales de seguimiento.",
     next: "Relaciona el post con una Noticia Maestra o sincroniza métricas para mostrar el monitoreo.",
     features: [
-      { title: "Origen del post", body: "Distingue publicaciones creadas desde Factomedia de las importadas desde una red social.", icon: Route },
+      { title: "Origen del post", body: "Distingue publicaciones creadas desde El Facto Noticias de las importadas desde una red social.", icon: Route },
       { title: "Métricas históricas", body: "Muestra cómo cambian vistas, interacciones, clics y seguidores en el tiempo.", icon: BarChart3 },
       { title: "Vincular historia", body: "Permite asociar una publicación externa con su Noticia Maestra.", icon: Newspaper },
       { title: "Identificar autora", body: "Ayuda a resolver cuentas externas para completar la trazabilidad.", icon: ShieldCheck },

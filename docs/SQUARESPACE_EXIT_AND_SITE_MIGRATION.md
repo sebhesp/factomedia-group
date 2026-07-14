@@ -2,7 +2,7 @@
 
 ## Estado confirmado
 
-El sitio anterior `https://www.elfactomediagroup.com/` estaba construido en Squarespace y actualmente se encuentra vencido.
+El sitio anterior estaba construido en Squarespace y actualmente se encuentra vencido.
 
 ## Decisión de arquitectura
 
@@ -10,10 +10,10 @@ Squarespace no será el CMS de producción del nuevo sistema.
 
 La nueva arquitectura será:
 
-- **Factomedia Studio**: aplicación interna para Instagram, transcripción, notas, revisión y métricas.
+- **El Facto Noticias · Redacción**: aplicación interna para Instagram, transcripción, notas, revisión y métricas.
 - **Supabase**: base de datos, autenticación, almacenamiento y estado editorial.
 - **Next.js en Vercel**: sitio público y aplicación interna.
-- **elfactomediagroup.com**: dominio principal conectado a Vercel.
+- **Dominio definitivo de El Facto Noticias**: conectado a Vercel después de validar staging.
 - **GitHub Pages**: únicamente demo y respaldo visual; no producción.
 
 Al aprobar y publicar una nota, el mismo registro de Supabase queda disponible en el sitio público. No existe una segunda copia que mantener manualmente.
@@ -82,7 +82,7 @@ La función `instagram-review` ya está preparada para publicar directamente al 
 
 ### Fase B — Staging
 
-- desplegar Factomedia en Vercel con subdominio temporal;
+- desplegar El Facto Noticias en Vercel con subdominio temporal;
 - conectar Supabase;
 - publicar 10 notas de prueba;
 - probar móvil, SEO, Open Graph y analítica;
@@ -91,7 +91,7 @@ La función `instagram-review` ya está preparada para publicar directamente al 
 ### Fase C — Cambio de dominio
 
 - bajar TTL de DNS;
-- conectar `elfactomediagroup.com` y `www` a Vercel;
+- conectar el dominio definitivo y su versión `www` a Vercel;
 - conservar MX y registros de correo;
 - activar HTTPS;
 - probar redirecciones;

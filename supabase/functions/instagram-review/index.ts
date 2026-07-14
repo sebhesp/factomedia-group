@@ -115,7 +115,7 @@ Deno.serve(async (request) => {
       const seoPatch = allowedPatch.seo ?? draft.seo ?? {};
       const requestedSlug = typeof seoPatch.slug === "string" ? seoPatch.slug : draft.slug;
       const slug = slugify(requestedSlug || effectiveTitle) || `${draft.id}`;
-      const siteUrl = (Deno.env.get("PUBLIC_SITE_URL") ?? "https://www.elfactomediagroup.com").replace(/\/$/, "");
+      const siteUrl = required("PUBLIC_SITE_URL").replace(/\/$/, "");
       const canonicalUrl = `${siteUrl}/noticias/${slug}`;
 
       nextStatus = "published";
@@ -126,7 +126,7 @@ Deno.serve(async (request) => {
       update.cms_url = canonicalUrl;
       update.published_at = new Date().toISOString();
 
-      // Optional compatibility adapter. The native Factomedia site does not depend on it.
+      // Optional compatibility adapter. The native El Facto Noticias site does not depend on it.
       const cmsEndpoint = Deno.env.get("CMS_PUBLISH_ENDPOINT");
       const cmsSecret = Deno.env.get("CMS_PUBLISH_SECRET");
       if (cmsEndpoint && cmsSecret) {

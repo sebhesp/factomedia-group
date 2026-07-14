@@ -2,7 +2,7 @@
 
 ## Decisión de producto
 
-El contenido publicado en `@elfactonoticias` ya pasó por revisión editorial interna. Por ello, Factomedia lo trata como **origen editorial revisado**, no como una señal externa pendiente de confirmar desde cero.
+El contenido publicado en `@elfactonoticias` ya pasó por revisión editorial interna. Por ello, El Facto Noticias lo trata como **origen editorial revisado**, no como una señal externa pendiente de confirmar desde cero.
 
 ## Qué puede hacer el sistema sin bloquearse
 
@@ -32,7 +32,7 @@ Las fuentes externas no son un requisito universal. Se consultan para:
 Cada historia debe registrar:
 
 - `instagram_published_at`: hora exacta del Reel;
-- `detected_at`: hora en que Factomedia lo detectó;
+- `detected_at`: hora en que El Facto Noticias lo detectó;
 - `draft_ready_at`: hora en que quedó lista la nota;
 - `reviewed_at`: hora de revisión humana;
 - `web_published_at`: hora de publicación web;
