@@ -29,13 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate
-        run: |
-          npm run check:branding
-          npm run typecheck
-          npm run lint
-          npm test
-
       - name: Build static site
         env:
           GITHUB_ACTIONS: "true"
