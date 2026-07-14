@@ -10,7 +10,7 @@ import {
   ChevronRight,
   CircleGauge,
   FilePlus2,
-  Instagram,
+  Camera as Instagram,
   MoreHorizontal,
   Newspaper,
   Radio,

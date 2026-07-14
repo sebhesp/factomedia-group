@@ -8,7 +8,7 @@ import {
   CircleAlert,
   Clock3,
   FileText,
-  Instagram,
+  Camera as Instagram,
   Mic2,
   RefreshCw,
   SearchCheck,

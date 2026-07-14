@@ -10,7 +10,7 @@ import {
   Clock3,
   ExternalLink,
   FileText,
-  Instagram,
+  Camera as Instagram,
   Save,
   Send,
   ShieldCheck,

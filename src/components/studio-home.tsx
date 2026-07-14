@@ -7,7 +7,7 @@ import {
   CircleAlert,
   Clock3,
   FilePlus2,
-  Instagram,
+  Camera as Instagram,
   Radio,
   SearchCheck,
   Sparkles,
