@@ -49,7 +49,7 @@ function mobileDescription(href: string) {
   if (href === "/desk/noticias/nueva") return "Crear una historia fuera del flujo de Instagram";
   if (href === "/distribucion") return "Posts, métricas y seguimiento";
   if (href === "/aprendizajes") return "Fricciones, experimentos y mejoras";
-  return "Sitio público de Factomedia";
+  return "Sitio público de El Facto Noticias";
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -104,7 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="sidebar">
         <Link href="/mi-dia" className="brand brand-desk" data-track-event="navigation_used" data-track-id="nav-brand" data-track-destination="mi-dia">
           <span className="brand-mark">F</span>
-          <span className="brand-copy"><strong>FACTOMEDIA</strong><small>STUDIO</small></span>
+          <span className="brand-copy"><strong>EL FACTO</strong><small>NOTICIAS</small></span>
         </Link>
         <span className="nav-section-label">MOTOR EDITORIAL</span>
         <nav className="side-nav">
@@ -120,7 +120,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="desk-main">
         <header className="desk-header">
-          <div className="desk-header-left"><span className="mobile-brand">Factomedia Studio</span><span className="workspace-status"><i /> Instagram conectado · DEMO</span></div>
+          <div className="desk-header-left"><span className="mobile-brand">El Facto Noticias</span><span className="workspace-status"><i /> Instagram conectado · DEMO</span></div>
           <div className="desk-header-actions"><Link href="/instagram" className="radar-entry-button" data-track-event="navigation_used" data-track-id="header-instagram-engine" data-track-destination="instagram" data-track-surface="header"><Instagram size={15} /> Ver Reels</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications" data-track-destination="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
         </header>
 
@@ -150,7 +150,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mobile-more-backdrop" role="presentation" onMouseDown={closeMobileMoreFromBackdrop} onTouchStart={closeMobileMoreFromBackdrop}>
             <section id="mobile-more-menu" className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Más secciones" onMouseDown={(event) => event.stopPropagation()} onTouchStart={(event) => event.stopPropagation()}>
               <div className="mobile-sheet-handle" />
-              <header><div><span>FACTOMEDIA STUDIO</span><h2>Más herramientas</h2></div><button type="button" onClick={() => setMobileMoreOpen(false)} aria-label="Cerrar"><X size={20} /></button></header>
+              <header><div><span>EL FACTO NOTICIAS</span><h2>Más herramientas</h2></div><button type="button" onClick={() => setMobileMoreOpen(false)} aria-label="Cerrar"><X size={20} /></button></header>
               <nav>
                 {mobileSecondaryLinks.map(({ href, label, icon: Icon }) => (
                   <Link key={href} href={href} onClick={() => setMobileMoreOpen(false)} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-more-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
