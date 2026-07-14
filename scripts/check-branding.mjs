@@ -11,6 +11,7 @@ const forbidden = [
   /FactoDesk/gi,
   /FACTOMEDIA/gi,
   /Factomedia/gi,
+  /elfactomediagroup\.com/gi,
 ];
 
 async function collect(path) {
@@ -31,6 +32,7 @@ for (const file of files) {
   const text = await readFile(file, "utf8");
   const lines = text.split(/\r?\n/);
   lines.forEach((line, index) => {
+    if (line.includes("/factomedia-group")) return; // Technical GitHub Pages base path until the repository is renamed.
     for (const pattern of forbidden) {
       pattern.lastIndex = 0;
       if (pattern.test(line)) {

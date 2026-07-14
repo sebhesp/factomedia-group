@@ -55,11 +55,11 @@ export function LearningCenter() {
       setFeedback(listProductFeedback());
     }
     refresh();
-    window.addEventListener("factomedia:product-event", refresh);
-    window.addEventListener("factomedia:feedback-submitted", refresh);
+    window.addEventListener("el-facto-noticias:product-event", refresh);
+    window.addEventListener("el-facto-noticias:feedback-submitted", refresh);
     return () => {
-      window.removeEventListener("factomedia:product-event", refresh);
-      window.removeEventListener("factomedia:feedback-submitted", refresh);
+      window.removeEventListener("el-facto-noticias:product-event", refresh);
+      window.removeEventListener("el-facto-noticias:feedback-submitted", refresh);
     };
   }, []);
 
@@ -97,7 +97,7 @@ export function LearningCenter() {
           <Link href="/mi-dia" className="radar-back"><ArrowLeft size={15} /> Volver a Mi mesa</Link>
           <span className="eyebrow">INTELIGENCIA DE PRODUCTO</span>
           <h1>Aprendizajes</h1>
-          <p>Convierte cada interacción, bloqueo, experimento y comentario en decisiones concretas para mejorar Factomedia.</p>
+          <p>Convierte cada interacción, bloqueo, experimento y comentario en decisiones concretas para mejorar El Facto Noticias.</p>
         </div>
         <div className="learning-guardrail"><ShieldCheck size={20} /><span><strong>Aprender no significa cambiar a ciegas.</strong><small>Las recomendaciones requieren evidencia, revisión humana y métricas de protección.</small></span></div>
       </header>

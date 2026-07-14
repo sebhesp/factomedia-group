@@ -71,7 +71,7 @@ export function DistributionDashboard() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [tab, setTab] = useState<"overview" | "posts" | "stories" | "alerts">("overview");
   const [platform, setPlatform] = useState<"all" | SocialPlatform>("all");
-  const [origin, setOrigin] = useState<"all" | "factomedia" | "native">("all");
+  const [origin, setOrigin] = useState<"all" | "el_facto" | "native">("all");
   const [query, setQuery] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<string | null>(null);
@@ -145,7 +145,7 @@ export function DistributionDashboard() {
       <header className="distribution-hero">
         <div>
           <span className="eyebrow">DISTRIBUCIÓN Y RENDIMIENTO</span>
-          <h1>Todo lo publicado vuelve a Factomedia.</h1>
+          <h1>Todo lo publicado vuelve a El Facto Noticias.</h1>
           <p>Monitorea publicaciones creadas dentro y fuera de la plataforma, relaciónalas con historias y entiende cómo crecen con el tiempo.</p>
         </div>
         <div className="distribution-hero-actions">
@@ -168,7 +168,7 @@ export function DistributionDashboard() {
             <Card><span>Interacciones</span><strong>{compact(totals.interactions)}</strong><small>{totals.views ? ((totals.interactions / totals.views) * 100).toFixed(2) : "0"}% sobre visualizaciones</small></Card>
             <Card><span>Clics hacia historias</span><strong>{compact(totals.clicks)}</strong><small>Desde publicaciones con enlace medible</small></Card>
             <Card><span>Seguidores atribuidos</span><strong>+{full(totals.followers)}</strong><small>Estimación reportada por plataforma</small></Card>
-            <Card className="external-kpi"><span>Publicados fuera de Factomedia</span><strong>{totals.external}</strong><small>Detectados e importados automáticamente</small></Card>
+            <Card className="external-kpi"><span>Publicados fuera de El Facto Noticias</span><strong>{totals.external}</strong><small>Detectados e importados automáticamente</small></Card>
           </section>
 
           <section className="distribution-live-grid">
@@ -182,7 +182,7 @@ export function DistributionDashboard() {
                     <Link href={`/distribucion/post?id=${post.id}`} key={post.id} className="growing-post">
                       <span className="growing-rank">0{index + 1}</span>
                       <div className={`platform-mark ${post.platform}`}><Icon size={16} /></div>
-                      <div className="growing-copy"><strong>{post.storyTitle ?? post.text}</strong><span>{platformLabels[post.platform]} · {post.origin === "native" ? "Publicado directamente" : "Desde Factomedia"}</span></div>
+                      <div className="growing-copy"><strong>{post.storyTitle ?? post.text}</strong><span>{platformLabels[post.platform]} · {post.origin === "native" ? "Publicado directamente" : "Desde El Facto Noticias"}</span></div>
                       <div className="growing-metric"><TrendingUp size={15} /><strong>{compact(metric.views)}</strong><span>vistas</span></div>
                       <ArrowUpRight size={16} />
                     </Link>
@@ -234,7 +234,7 @@ export function DistributionDashboard() {
           <div className="distribution-filters">
             <div className="social-search"><Search size={17} /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por texto o historia…" /></div>
             <select className="input" value={platform} onChange={(event) => setPlatform(event.target.value as "all" | SocialPlatform)}><option value="all">Todas las plataformas</option><option value="x">X</option><option value="instagram">Instagram</option><option value="threads">Threads</option></select>
-            <select className="input" value={origin} onChange={(event) => setOrigin(event.target.value as "all" | "factomedia" | "native")}><option value="all">Todos los orígenes</option><option value="factomedia">Desde Factomedia</option><option value="native">Publicados directamente</option></select>
+            <select className="input" value={origin} onChange={(event) => setOrigin(event.target.value as "all" | "el_facto" | "native")}><option value="all">Todos los orígenes</option><option value="el_facto">Desde El Facto Noticias</option><option value="native">Publicados directamente</option></select>
           </div>
           <div className="social-post-grid social-post-grid-wide">
             {filteredPosts.map((post) => <SocialPostCard key={post.id} post={post} />)}
@@ -292,8 +292,8 @@ function SocialPostCard({ post }: { post: SocialPost }) {
     <Link href={`/distribucion/post?id=${post.id}`} className="social-post-card">
       <div className="social-post-card-top">
         <div className={`platform-mark ${post.platform}`}><Icon size={16} /></div>
-        <div><strong>{platformLabels[post.platform]}</strong><span>{post.origin === "native" ? `Publicado directamente en ${platformLabels[post.platform]}` : "Publicado desde Factomedia"}</span></div>
-        <span className={`origin-pill ${post.origin}`}>{post.origin === "native" ? "IMPORTADO" : "FACTOMEDIA"}</span>
+        <div><strong>{platformLabels[post.platform]}</strong><span>{post.origin === "native" ? `Publicado directamente en ${platformLabels[post.platform]}` : "Publicado desde El Facto Noticias"}</span></div>
+        <span className={`origin-pill ${post.origin}`}>{post.origin === "native" ? "IMPORTADO" : "EL FACTO NOTICIAS"}</span>
       </div>
       <p>{post.text}</p>
       <div className="social-post-story">{post.storyTitle ? <><Link2 size={13} /> {post.storyTitle}</> : <><AlertTriangle size={13} /> Sin Noticia Maestra relacionada</>}</div>

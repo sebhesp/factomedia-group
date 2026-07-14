@@ -1,4 +1,4 @@
-# Factomedia Studio — optimización móvil
+# El Facto Noticias · Redacción — optimización móvil
 
 ## Objetivo
 

@@ -1,16 +1,16 @@
-# Factomedia — Sistema de distribución y rendimiento
+# El Facto Noticias — Sistema de distribución y rendimiento
 
 ## Promesa de producto
 
-Todo lo que Factomedia publique, dentro o fuera de la plataforma, debe regresar como contexto, rendimiento y aprendizaje editorial.
+Todo lo que El Facto Noticias publique, dentro o fuera de la plataforma, debe regresar como contexto, rendimiento y aprendizaje editorial.
 
 El sistema no se limita a programar publicaciones. Mantiene una relación trazable entre la Noticia Maestra, cada pieza social, las personas que intervinieron y los datos que las plataformas entregan con el tiempo.
 
 ## Flujo operativo
 
-1. Una publicación se crea desde Factomedia o directamente en X, Instagram o Threads.
+1. Una publicación se crea desde El Facto Noticias o directamente en X, Instagram o Threads.
 2. El conector consulta publicaciones nuevas mediante un cursor incremental o el último ID conocido.
-3. Factomedia evita duplicados usando `platform + account + externalId`.
+3. El Facto Noticias evita duplicados usando `platform + account + externalId`.
 4. La publicación se importa con su texto, fecha, formato, origen y métricas disponibles.
 5. El motor de reconciliación propone una Noticia Maestra usando enlaces, similitud textual, entidades y proximidad temporal.
 6. Coincidencias menores a 88% requieren confirmación humana.
@@ -25,7 +25,7 @@ El sistema no se limita a programar publicaciones. Mantiene una relación trazab
 - ID interno.
 - ID externo.
 - Plataforma y cuenta.
-- Origen: Factomedia, aplicación nativa o importación manual.
+- Origen: El Facto Noticias, aplicación nativa o importación manual.
 - Texto y formato editorial.
 - Estado.
 - Noticia Maestra relacionada.
@@ -76,7 +76,7 @@ La primera integración debe incluir:
 La integración debe usar cuentas profesionales y permisos aprobados por Meta.
 
 - Lectura de medios publicados por la cuenta.
-- Importación de publicaciones creadas fuera de Factomedia.
+- Importación de publicaciones creadas fuera de El Facto Noticias.
 - Insights por tipo de contenido según disponibilidad.
 - Registro explícito de métricas no disponibles.
 - Manejo de expiración de tokens y pérdida de permisos.
@@ -109,7 +109,7 @@ Las alertas deben ser accionables:
 - Corrección de la noticia no reflejada en redes.
 - Métrica o sincronización detenida.
 - Respuesta relevante de autoridad o fuente.
-- Publicación eliminada o editada fuera de Factomedia.
+- Publicación eliminada o editada fuera de El Facto Noticias.
 - Rendimiento inusual frente a piezas comparables.
 
 ## Integridad analítica

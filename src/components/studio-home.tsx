@@ -51,7 +51,7 @@ export function StudioHome() {
         <div>
           <span className="studio-date">{today}</span>
           <h1>Instagram ya empezó el trabajo.</h1>
-          <p>Factomedia detectó los Reels, avanzó las notas y te muestra únicamente lo que necesita una decisión humana.</p>
+          <p>El Facto Noticias detectó los Reels, avanzó las notas y te muestra únicamente lo que necesita una decisión humana.</p>
         </div>
         <div className="studio-presence" aria-label="Equipo activo">
           <span className="presence-avatars"><i>IR</i><i>PM</i><i>JL</i></span>
@@ -92,7 +92,7 @@ export function StudioHome() {
 
           <section className="active-work-section">
             <div className="studio-section-heading">
-              <div><span className="eyebrow">PIPELINE AUTOMÁTICO</span><h2>Qué está haciendo Factomedia</h2></div>
+              <div><span className="eyebrow">PIPELINE AUTOMÁTICO</span><h2>Qué está haciendo El Facto Noticias</h2></div>
               <Link href="/instagram" data-track-event="navigation_used" data-track-id="view-instagram-engine" data-track-destination="instagram">Ver todos los Reels <ArrowRight size={14} /></Link>
             </div>
             <div className="studio-story-list">
@@ -134,7 +134,7 @@ export function StudioHome() {
           <Card className="studio-live-card">
             <div className="live-card-heading"><span><Radio size={17} /> COBERTURA EN VIVO</span><i /></div>
             <h3>Las noticias urgentes siguen teniendo una ruta propia.</h3>
-            <p>Factomedia Ahora permite publicar actualizaciones rápidas sin esperar a un Reel.</p>
+            <p>Ahora permite publicar actualizaciones rápidas sin esperar a un Reel.</p>
             <Link href="/redaccion">Abrir redacción en vivo <ArrowRight size={15} /></Link>
           </Card>
 

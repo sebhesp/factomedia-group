@@ -73,7 +73,7 @@ async function resolveArticleTime(article: GdeltArticle) {
     const url = new URL(article.url);
     if (!["http:", "https:"].includes(url.protocol)) throw new Error("Unsupported URL protocol");
     const response = await fetch(url, {
-      headers: { "User-Agent": "FactomediaResearchBot/1.0 (+editorial timing comparison)" },
+      headers: { "User-Agent": "ElFactoNoticiasResearchBot/1.0 (+editorial timing comparison)" },
       redirect: "follow",
       signal: AbortSignal.timeout(8_000),
     });

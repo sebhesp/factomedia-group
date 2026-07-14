@@ -1,5 +1,5 @@
 export type SocialPlatform = "x" | "instagram" | "threads";
-export type SocialOrigin = "factomedia" | "native" | "manual";
+export type SocialOrigin = "el_facto" | "native" | "manual";
 export type SocialPostStatus = "draft" | "scheduled" | "published" | "deleted" | "error";
 export type SocialPostFormat = "alert" | "update" | "thread" | "context" | "correction" | "closing" | "caption" | "note";
 

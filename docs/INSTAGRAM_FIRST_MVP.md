@@ -1,8 +1,8 @@
-# Factomedia — MVP Instagram primero
+# El Facto Noticias — MVP Instagram primero
 
 ## Producto
 
-El corazón del sistema es Instagram. El equipo continúa publicando Reels como hoy; Factomedia detecta el contenido, lo procesa y entrega una Nota Maestra lista para revisión.
+El corazón del sistema es Instagram. El equipo continúa publicando Reels como hoy; El Facto Noticias detecta el contenido, lo procesa y entrega una Nota Maestra lista para revisión.
 
 ## Promesa del MVP
 
@@ -126,7 +126,7 @@ Perfiles iniciales a configurar:
 ### Frontend
 
 - Next.js + TypeScript.
-- Factomedia Studio como panel de revisión.
+- El Facto Noticias · Redacción como panel de revisión.
 - Diseño móvil primero.
 
 ### Backend

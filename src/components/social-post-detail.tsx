@@ -136,7 +136,7 @@ export function SocialPostDetail({ postId }: { postId: string }) {
       <header className="social-detail-header">
         <div className={`platform-mark large ${post.platform}`}><Icon size={22} /></div>
         <div className="social-detail-title">
-          <div><span>{platformLabels[post.platform]}</span><span className={`origin-pill ${post.origin}`}>{post.origin === "native" ? "PUBLICADO DIRECTAMENTE" : "DESDE FACTOMEDIA"}</span></div>
+          <div><span>{platformLabels[post.platform]}</span><span className={`origin-pill ${post.origin}`}>{post.origin === "native" ? "PUBLICADO DIRECTAMENTE" : "DESDE EL FACTO NOTICIAS"}</span></div>
           <h1>{post.storyTitle ?? "Publicación sin relacionar"}</h1>
           <p>{post.account} · {date(post.publishedAt)}</p>
         </div>

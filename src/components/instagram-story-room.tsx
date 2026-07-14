@@ -47,7 +47,7 @@ function demoStory(storyId: string): Story {
     createdAt: now,
     updatedAt: now,
     corrections: [],
-    events: [{ id: "event-origin", type: "Reel detectado y convertido en nota", actor: "Factomedia", occurredAt: now }],
+    events: [{ id: "event-origin", type: "Reel detectado y convertido en nota", actor: "El Facto Noticias", occurredAt: now }],
     metrics: { views: 0, readsStarted: 0, readsCompleted: 0, shares: 0 },
     demo: true,
   };

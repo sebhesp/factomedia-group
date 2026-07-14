@@ -1,4 +1,4 @@
--- Factomedia product intelligence schema
+-- El Facto Noticias product intelligence schema
 -- Run after the core authentication/profile schema exists.
 
 create table if not exists public.product_events (

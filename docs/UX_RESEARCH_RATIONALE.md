@@ -1,8 +1,8 @@
-# Factomedia Studio — investigación y justificación de UX
+# El Facto Noticias · Redacción — investigación y justificación de UX
 
 ## Tesis de producto
 
-Factomedia Studio no debe comportarse como un CMS administrativo. Debe sentirse como un espacio editorial en el que capturar, investigar, escribir, verificar, revisar y distribuir ocurren sobre un mismo núcleo de contenido.
+El Facto Noticias · Redacción no debe comportarse como un CMS administrativo. Debe sentirse como un espacio editorial en el que capturar, investigar, escribir, verificar, revisar y distribuir ocurren sobre un mismo núcleo de contenido.
 
 La interfaz se diseña alrededor de tres preguntas constantes:
 
@@ -24,7 +24,7 @@ Patrones relevantes:
 - Los comentarios, sugerencias y acciones de IA aparecen sobre el bloque relacionado.
 - Las menciones permiten llevar a una persona al punto exacto que requiere atención.
 
-Aplicación en Factomedia:
+Aplicación en El Facto Noticias:
 
 - La Noticia Maestra es el lienzo principal.
 - Fuentes, citas, afirmaciones, contexto y actualizaciones se tratan como bloques editoriales.
@@ -42,7 +42,7 @@ Patrones relevantes:
 - Construir con usuarios y lanzar de forma incremental.
 - Evitar que la interfaz compita con la tarea principal.
 
-Aplicación en Factomedia:
+Aplicación en El Facto Noticias:
 
 - `Mi mesa` ordena el trabajo por lo que desbloquea más avance.
 - Cada historia presenta una sola siguiente acción recomendada.
@@ -59,7 +59,7 @@ Patrones relevantes:
 - La complejidad técnica se traduce a una operación familiar.
 - La IA actúa bajo dirección, ofrece sugerencias y mantiene la intención creativa.
 
-Aplicación en Factomedia:
+Aplicación en El Facto Noticias:
 
 - El colaborador modifica una sola Noticia Maestra.
 - La web, X, Threads e Instagram se derivan de ese núcleo.
@@ -77,7 +77,7 @@ Patrones relevantes:
 - Se puede continuar trabajando sin conexión y reconciliar cambios después.
 - Comentarios y datos operativos pueden sincronizarse por mecanismos distintos al lienzo principal.
 
-Aplicación en Factomedia:
+Aplicación en El Facto Noticias:
 
 - Presencia visible y discreta del equipo.
 - Una única versión actual de la historia, acompañada por historial y eventos.
@@ -94,7 +94,7 @@ Patrones relevantes:
 - Las vistas pueden ser colaborativas, personales o bloqueadas.
 - Filtrar, agrupar y ordenar no requiere duplicar los registros.
 
-Aplicación en Factomedia:
+Aplicación en El Facto Noticias:
 
 - La misma Noticia Maestra se presenta como Mi mesa, Redacción, cobertura en vivo, distribución y archivo.
 - Cada rol ve la superficie necesaria para su decisión.
@@ -168,12 +168,12 @@ Principios adoptados:
 - Una historia prioritaria y una siguiente acción.
 - Lista secundaria ordenada por bloqueo.
 - Presencia del equipo sin ruido.
-- Acceso a Factomedia Ahora.
+- Acceso a Ahora.
 
 ### Shell de navegación
 
 - Cinco destinos principales.
-- Marca `Factomedia Studio`.
+- Marca `El Facto Noticias · Redacción`.
 - Estado de conexión visible.
 - Paleta global `⌘K`.
 - Navegación móvil reducida a las cuatro acciones internas principales.
@@ -198,4 +198,4 @@ Principios adoptados:
 
 ## Regla de diseño
 
-> El colaborador se concentra en entender y contar lo que ocurre. Factomedia organiza el sistema alrededor de esa intención.
+> El colaborador se concentra en entender y contar lo que ocurre. El Facto Noticias organiza el sistema alrededor de esa intención.

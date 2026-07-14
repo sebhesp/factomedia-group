@@ -1,4 +1,4 @@
-# Factomedia Instagram — guía para pasar de demo a operación real
+# El Facto Noticias — Instagram — guía para pasar de demo a operación real
 
 Este documento cubre la primera entrega real:
 
@@ -17,7 +17,7 @@ Este documento cubre la primera entrega real:
 
 ## Paso 1 — Crear el proyecto de Supabase
 
-1. Crear un proyecto de Supabase para Factomedia.
+1. Crear un proyecto de Supabase para El Facto Noticias.
 2. Guardar:
    - Project URL;
    - anon key;
@@ -185,7 +185,7 @@ El comparador:
 
 Importante: una hora recuperada por rastreo o metadatos no siempre equivale a la primera publicación absoluta de internet. La interfaz debe presentarla como comparación de fuentes detectadas, no como una afirmación universal.
 
-## Paso 10 — Revisar en Factomedia Studio
+## Paso 10 — Revisar en El Facto Noticias · Redacción
 
 Ruta:
 
@@ -208,7 +208,7 @@ Las acciones reales requieren sesión de Supabase.
 
 ## Paso 11 — Conectar el CMS
 
-Factomedia no debe adivinar el CMS.
+El Facto Noticias no debe adivinar el CMS.
 
 Crear un adaptador HTTP que reciba el borrador aprobado y responda:
 

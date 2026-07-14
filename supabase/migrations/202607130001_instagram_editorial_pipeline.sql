@@ -1,4 +1,4 @@
--- Factomedia Instagram-first editorial pipeline
+-- El Facto Noticias — Instagram-first editorial pipeline
 -- Safe to run in a new Supabase project. Uses text stages to keep migrations evolvable.
 
 create extension if not exists pgcrypto;

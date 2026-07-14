@@ -1,8 +1,8 @@
-# Factomedia — sistema de aprendizaje continuo
+# El Facto Noticias — sistema de aprendizaje continuo
 
 ## Tesis
 
-Factomedia debe mejorar con cada uso, pero no puede optimizar una sola métrica a costa de calidad editorial, privacidad o bienestar del equipo. El sistema sigue este ciclo:
+El Facto Noticias debe mejorar con cada uso, pero no puede optimizar una sola métrica a costa de calidad editorial, privacidad o bienestar del equipo. El sistema sigue este ciclo:
 
 1. **Observar:** registrar acciones, tiempos, bloqueos, errores y feedback sin capturar el contenido de las noticias.
 2. **Entender:** agrupar señales por pantalla, etapa editorial, rol y sesión.
@@ -198,4 +198,4 @@ Historias descartadas, feedback negativo y fuentes insuficientes.
 
 ## Principio final
 
-> Factomedia aprende de las personas para reducir fricción y elevar calidad; no utiliza métricas para vigilar, presionar o sustituir el criterio editorial.
+> El Facto Noticias aprende de las personas para reducir fricción y elevar calidad; no utiliza métricas para vigilar, presionar o sustituir el criterio editorial.

@@ -1,4 +1,4 @@
--- Factomedia Group MVP schema
+-- El Facto Noticias MVP schema
 -- Run with Supabase CLI or paste into the Supabase SQL editor.
 
 create extension if not exists pgcrypto;

@@ -1,8 +1,8 @@
-# Factomedia Studio readiness
+# El Facto Noticias · Redacción readiness
 
 ## Ready for product review
 
-The collaborator experience is implemented in `main` and the official GitHub Pages workspace is published at `/factomedia-group/mi-dia/`.
+The collaborator experience is implemented in `main` and the official GitHub Pages workspace is published from the repository Pages environment.
 
 Included:
 
