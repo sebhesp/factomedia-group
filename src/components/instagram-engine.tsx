@@ -136,7 +136,7 @@ type CopyFieldProps = {
 function CopyField({ fieldKey, label, value, copiedKey, onCopy, wide = false }: CopyFieldProps) {
   const available = Boolean(value.trim());
   return (
-    <section className={`ig-copy-field${wide ? " wide" : "}`}>
+    <section className={`ig-copy-field${wide ? " wide" : ""}`}>
       <header>
         <span>{label}</span>
         <button type="button" onClick={() => onCopy(fieldKey, value)} disabled={!available} aria-label={`Copiar ${label}`}>
