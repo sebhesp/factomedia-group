@@ -37,6 +37,16 @@ function required(name: string) {
   return value;
 }
 
+function slugify(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100);
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -68,7 +78,7 @@ Deno.serve(async (request) => {
     const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
     const { data: draft, error: draftError } = await admin
       .from("instagram_story_drafts")
-      .select("id,media_id,editor_status,cms_entry_id")
+      .select("id,media_id,title,slug,seo,editor_status,cms_entry_id")
       .eq("media_id", body.media_id)
       .single();
     if (draftError || !draft) return json({ error: "Draft not found" }, 404);
@@ -98,33 +108,46 @@ Deno.serve(async (request) => {
     }
     if (body.action === "publish") {
       if (draft.editor_status !== "approved") return json({ error: "Draft must be approved before publishing" }, 409);
-      const cmsEndpoint = Deno.env.get("CMS_PUBLISH_ENDPOINT");
-      const cmsSecret = Deno.env.get("CMS_PUBLISH_SECRET");
-      if (!cmsEndpoint || !cmsSecret) {
-        return json({ error: "CMS integration is not configured", code: "CMS_NOT_CONFIGURED" }, 409);
-      }
 
-      const { data: fullDraft, error: fullDraftError } = await admin
-        .from("instagram_story_drafts")
-        .select("*,instagram_media!inner(permalink,published_at,thumbnail_url)")
-        .eq("media_id", body.media_id)
-        .single();
-      if (fullDraftError || !fullDraft) throw fullDraftError ?? new Error("Could not load full draft");
-
-      const cmsResponse = await fetch(cmsEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${cmsSecret}` },
-        body: JSON.stringify(fullDraft),
-        signal: AbortSignal.timeout(30_000),
-      });
-      const cmsPayload = await cmsResponse.json().catch(() => ({}));
-      if (!cmsResponse.ok) throw new Error(cmsPayload?.error ?? `CMS returned ${cmsResponse.status}`);
+      const effectiveTitle = typeof allowedPatch.title === "string" && allowedPatch.title.trim()
+        ? allowedPatch.title.trim()
+        : draft.title;
+      const seoPatch = allowedPatch.seo ?? draft.seo ?? {};
+      const requestedSlug = typeof seoPatch.slug === "string" ? seoPatch.slug : draft.slug;
+      const slug = slugify(requestedSlug || effectiveTitle) || `${draft.id}`;
+      const siteUrl = (Deno.env.get("PUBLIC_SITE_URL") ?? "https://www.elfactomediagroup.com").replace(/\/$/, "");
+      const canonicalUrl = `${siteUrl}/noticias/${slug}`;
 
       nextStatus = "published";
       eventType = "instagram_story_published";
-      update.cms_entry_id = cmsPayload.id ?? cmsPayload.entry_id ?? null;
-      update.cms_url = cmsPayload.url ?? null;
+      update.slug = slug;
+      update.canonical_url = canonicalUrl;
+      update.cms_entry_id = draft.id;
+      update.cms_url = canonicalUrl;
       update.published_at = new Date().toISOString();
+
+      // Optional compatibility adapter. The native Factomedia site does not depend on it.
+      const cmsEndpoint = Deno.env.get("CMS_PUBLISH_ENDPOINT");
+      const cmsSecret = Deno.env.get("CMS_PUBLISH_SECRET");
+      if (cmsEndpoint && cmsSecret) {
+        const { data: fullDraft, error: fullDraftError } = await admin
+          .from("instagram_story_drafts")
+          .select("*,instagram_media!inner(permalink,published_at,thumbnail_url)")
+          .eq("media_id", body.media_id)
+          .single();
+        if (fullDraftError || !fullDraft) throw fullDraftError ?? new Error("Could not load full draft");
+
+        const cmsResponse = await fetch(cmsEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${cmsSecret}` },
+          body: JSON.stringify({ ...fullDraft, ...update }),
+          signal: AbortSignal.timeout(30_000),
+        });
+        const cmsPayload = await cmsResponse.json().catch(() => ({}));
+        if (!cmsResponse.ok) throw new Error(cmsPayload?.error ?? `CMS returned ${cmsResponse.status}`);
+        update.cms_entry_id = cmsPayload.id ?? cmsPayload.entry_id ?? draft.id;
+        update.cms_url = cmsPayload.url ?? canonicalUrl;
+      }
     }
 
     update.editor_status = nextStatus;
@@ -132,7 +155,7 @@ Deno.serve(async (request) => {
       .from("instagram_story_drafts")
       .update(update)
       .eq("id", draft.id)
-      .select("id,media_id,editor_status,cms_entry_id,cms_url,updated_at")
+      .select("id,media_id,slug,canonical_url,editor_status,cms_entry_id,cms_url,updated_at,published_at")
       .single();
     if (saveError) throw saveError;
 
@@ -143,7 +166,7 @@ Deno.serve(async (request) => {
       event_type: eventType,
       actor_type: "user",
       actor_id: authData.user.id,
-      payload: { role, comment: body.comment?.slice(0, 1000) ?? null },
+      payload: { role, comment: body.comment?.slice(0, 1000) ?? null, canonical_url: saved.canonical_url ?? null },
     });
 
     return json({ ok: true, draft: saved });
