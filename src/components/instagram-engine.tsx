@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -106,7 +106,7 @@ export function InstagramEngine() {
   const needsAction = useMemo(() => items.filter((item) => item.stage === "review" || item.stage === "ready"), [items]);
   const published = useMemo(() => items.filter((item) => item.stage === "published").length, [items]);
 
-  async function loadLiveData(showStatus = true) {
+  const loadLiveData = useCallback(async (showStatus = true) => {
     const result = await loadInstagramEngineItems();
     if (result.mode === "live") {
       if (result.items.length) setItems(result.items);
@@ -117,11 +117,11 @@ export function InstagramEngine() {
     setDataMode("demo");
     if (showStatus) setConnectionNote(result.error ? "Demo activa · falta iniciar sesión o aplicar la base de datos" : "Demo activa · Supabase aún no está configurado");
     return false;
-  }
+  }, []);
 
   useEffect(() => {
     void loadLiveData();
-  }, []);
+  }, [loadLiveData]);
 
   function simulateSync() {
     setSyncing(true);
