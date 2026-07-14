@@ -10,7 +10,11 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "check:branding": "node scripts/check-branding.mjs"
+    "check:branding": "node scripts/check-branding.mjs",
+    "check:readiness": "node scripts/check-production-readiness.mjs",
+    "check:readiness:template": "node scripts/check-production-readiness.mjs --template",
+    "smoke:health": "node scripts/smoke-instagram-pipeline.mjs --health-only",
+    "smoke:instagram": "node scripts/smoke-instagram-pipeline.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
