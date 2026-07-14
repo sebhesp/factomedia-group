@@ -1,0 +1,40 @@
+name: Apply release readiness patch
+
+on:
+  push:
+    branches: [release/instagram-real-ready]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[release fix applied]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/instagram-real-ready
+          fetch-depth: 0
+
+      - name: Apply patch
+        run: node scripts/apply-release-fix.mjs
+
+      - name: Validate static configuration
+        run: |
+          node scripts/check-branding.mjs
+          node scripts/check-production-readiness.mjs --template
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          if git diff --cached --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git commit -m "Finalize Instagram production readiness [release fix applied]"
+          git push origin HEAD:release/instagram-real-ready
