@@ -12,7 +12,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  branding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate El Facto Noticias branding
+        run: node scripts/check-branding.mjs
+
   quality:
+    needs: branding
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -26,9 +36,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-
-      - name: Validate branding
-        run: npm run check:branding
 
       - name: Typecheck
         run: npm run typecheck
