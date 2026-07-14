@@ -24,6 +24,9 @@ jobs:
       - name: Validate El Facto Noticias branding
         run: node scripts/check-branding.mjs
 
+      - name: Validate production environment template
+        run: node scripts/check-production-readiness.mjs --template
+
   quality:
     needs: branding
     runs-on: ubuntu-latest
