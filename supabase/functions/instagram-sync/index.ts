@@ -5,6 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
+const DAY_MS = 86_400_000;
+
 type InstagramMedia = {
   id: string;
   caption?: string;
@@ -22,6 +24,11 @@ type InstagramResponse = {
   error?: { message?: string; type?: string; code?: number };
 };
 
+type SyncRequest = {
+  backfill_days?: unknown;
+  max_pages?: unknown;
+};
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -33,6 +40,12 @@ function required(name: string) {
   const value = Deno.env.get(name);
   if (!value) throw new Error(`Missing environment variable: ${name}`);
   return value;
+}
+
+function boundedInteger(value: unknown, fallback: number, minimum: number, maximum: number) {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(maximum, Math.max(minimum, Math.trunc(parsed)));
 }
 
 async function authorize(request: Request, supabaseUrl: string, anonKey: string) {
@@ -53,6 +66,19 @@ async function authorize(request: Request, supabaseUrl: string, anonKey: string)
   return { mode: "user" as const, userId: data.user.id };
 }
 
+async function fetchInstagramPage(url: string) {
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(20_000),
+  });
+  const payload = (await response.json()) as InstagramResponse;
+  if (!response.ok || payload.error) {
+    const message = payload.error?.message ?? `Instagram API returned ${response.status}`;
+    throw new Error(message);
+  }
+  return payload;
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -69,6 +95,12 @@ Deno.serve(async (request) => {
 
     const caller = await authorize(request, supabaseUrl, anonKey);
     if (!caller) return json({ error: "Unauthorized" }, 401);
+
+    const requestBody = (await request.json().catch(() => ({}))) as SyncRequest;
+    const backfillDays = boundedInteger(requestBody.backfill_days, 7, 1, 30);
+    const maxPages = boundedInteger(requestBody.max_pages, 20, 1, 50);
+    const cutoffMs = Date.now() - backfillDays * DAY_MS;
+    const cutoffIso = new Date(cutoffMs).toISOString();
 
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -106,18 +138,38 @@ Deno.serve(async (request) => {
     endpoint.searchParams.set("limit", "50");
     endpoint.searchParams.set("access_token", accessToken);
 
-    const response = await fetch(endpoint, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(20_000),
-    });
-    const payload = (await response.json()) as InstagramResponse;
-    if (!response.ok || payload.error) {
-      const message = payload.error?.message ?? `Instagram API returned ${response.status}`;
-      await admin.from("instagram_accounts").update({ status: "error" }).eq("id", account.id);
-      throw new Error(message);
+    const mediaById = new Map<string, InstagramMedia>();
+    let nextUrl: string | null = endpoint.toString();
+    let pagesFetched = 0;
+    let ignoredOlder = 0;
+    let stoppedAtCutoff = false;
+
+    while (nextUrl && pagesFetched < maxPages) {
+      const payload = await fetchInstagramPage(nextUrl);
+      const pageItems = payload.data ?? [];
+      pagesFetched += 1;
+
+      let oldestTimestamp = Number.POSITIVE_INFINITY;
+      for (const media of pageItems) {
+        const publishedMs = new Date(media.timestamp).getTime();
+        if (Number.isFinite(publishedMs)) oldestTimestamp = Math.min(oldestTimestamp, publishedMs);
+        if (!Number.isFinite(publishedMs) || publishedMs < cutoffMs) {
+          ignoredOlder += 1;
+          continue;
+        }
+        mediaById.set(media.id, media);
+      }
+
+      nextUrl = payload.paging?.next ?? null;
+      if (!pageItems.length || oldestTimestamp < cutoffMs) {
+        stoppedAtCutoff = true;
+        break;
+      }
     }
 
-    const mediaItems = payload.data ?? [];
+    const mediaItems = [...mediaById.values()].sort(
+      (left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime(),
+    );
     let created = 0;
     let refreshed = 0;
 
@@ -142,7 +194,10 @@ Deno.serve(async (request) => {
             published_at: media.timestamp,
             editorial_origin: "reviewed",
             processing_status: existing ? undefined : "detected",
-            metadata: { username: media.username ?? instagramUsername },
+            metadata: {
+              username: media.username ?? instagramUsername,
+              imported_with_backfill_days: backfillDays,
+            },
           },
           { onConflict: "instagram_media_id" },
         )
@@ -162,7 +217,11 @@ Deno.serve(async (request) => {
           media_id: savedMedia.id,
           event_type: "instagram_media_detected",
           actor_type: "integration",
-          payload: { instagram_media_id: media.id, caller: caller.mode },
+          payload: {
+            instagram_media_id: media.id,
+            caller: caller.mode,
+            backfill_days: backfillDays,
+          },
         });
       } else {
         refreshed += 1;
@@ -174,14 +233,19 @@ Deno.serve(async (request) => {
       .update({
         status: "connected",
         last_synced_at: new Date().toISOString(),
-        sync_cursor: payload.paging?.next ?? null,
+        sync_cursor: nextUrl,
       })
       .eq("id", account.id);
 
     return json({
       ok: true,
       account: instagramUsername,
+      backfill_days: backfillDays,
+      cutoff: cutoffIso,
+      pages_fetched: pagesFetched,
+      stopped_at_cutoff: stoppedAtCutoff,
       fetched: mediaItems.length,
+      ignored_older: ignoredOlder,
       created,
       refreshed,
       synced_at: new Date().toISOString(),
