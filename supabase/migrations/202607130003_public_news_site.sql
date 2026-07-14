@@ -1,6 +1,8 @@
 -- Public publishing layer for the new El Facto website.
 -- Squarespace is treated only as a legacy content source; published articles live in Supabase.
 
+create extension if not exists unaccent;
+
 alter table public.instagram_story_drafts
   add column if not exists slug text,
   add column if not exists section text not null default 'Noticias',
