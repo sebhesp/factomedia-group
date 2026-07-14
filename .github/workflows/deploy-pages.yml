@@ -29,9 +29,10 @@ jobs:
       - name: 3. Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: 4. Validate code and branding
+      - name: 4. Validate code, branding and environment template
         run: |
           npm run check:branding
+          npm run check:readiness:template
           npm run typecheck
           npm run lint
           npm test
