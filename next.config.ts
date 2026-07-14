@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 import { networkInterfaces } from "node:os";
 
-const isGitHubPages = process.env.GITHUB_ACTIONS === "true";
 const repositoryName = "factomedia-group";
+const isVercel = process.env.VERCEL === "1";
+const isGitHubPages = process.env.DEPLOY_TARGET === "github-pages" || (process.env.GITHUB_ACTIONS === "true" && !isVercel);
 const localDevOrigins = Object.values(networkInterfaces())
   .flat()
   .filter((networkInterface): networkInterface is NonNullable<typeof networkInterface> => Boolean(networkInterface))
@@ -10,9 +11,9 @@ const localDevOrigins = Object.values(networkInterfaces())
   .map((networkInterface) => networkInterface.address);
 
 const nextConfig: NextConfig = {
-  output: "export",
-  trailingSlash: true,
-  images: { unoptimized: true },
+  ...(isGitHubPages ? { output: "export" as const } : {}),
+  trailingSlash: isGitHubPages,
+  images: { unoptimized: isGitHubPages },
   basePath: isGitHubPages ? `/${repositoryName}` : "",
   assetPrefix: isGitHubPages ? `/${repositoryName}/` : "",
   allowedDevOrigins: ["127.0.0.1", ...localDevOrigins],
