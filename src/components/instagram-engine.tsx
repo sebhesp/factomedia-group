@@ -42,9 +42,9 @@ const initialReels: InstagramEngineItem[] = [
     duration: "01:18",
     stage: "review",
     progress: 92,
-    note: "El Reel ya fue revisado por El Facto. La nota está redactada; falta decidir si se añade una cifra externa.",
+    note: "El Reel ya fue revisado por El Facto Noticias. La nota está redactada; falta decidir si se añade una cifra externa.",
     externalMatches: 3,
-    timingComparison: "El Facto publicó 6 min antes que el primer medio comparable",
+    timingComparison: "El Facto Noticias publicó 6 min antes que el primer medio comparable",
   },
   {
     id: "ig-002",
@@ -56,7 +56,7 @@ const initialReels: InstagramEngineItem[] = [
     progress: 100,
     note: "Origen editorial revisado. Transcripción, autor, portada y nota listas para aprobación.",
     externalMatches: 4,
-    timingComparison: "El Facto estuvo entre las primeras 3 cuentas en publicarlo",
+    timingComparison: "El Facto Noticias estuvo entre las primeras 3 cuentas en publicarlo",
   },
   {
     id: "ig-003",
@@ -92,7 +92,7 @@ const initialReels: InstagramEngineItem[] = [
     progress: 100,
     note: "Nota publicada desde el Reel y métricas sincronizadas.",
     externalMatches: 3,
-    timingComparison: "El Facto publicó 12 min antes que la mediana detectada",
+    timingComparison: "El Facto Noticias publicó 12 min antes que la mediana detectada",
   },
 ];
 
@@ -177,7 +177,7 @@ export function InstagramEngine() {
         <div>
           <span className="eyebrow"><Instagram size={15} /> INSTAGRAM ES EL ORIGEN EDITORIAL</span>
           <h1>De Reel revisado a nota, sin repetir el trabajo.</h1>
-          <p>Factomedia confía en el contenido publicado por @elfactonoticias como origen editorial revisado. Transcribe, estructura y prepara la nota; las fuentes externas aportan contexto, contradicciones y comparación de tiempos.</p>
+          <p>El Facto Noticias confía en el contenido publicado por @elfactonoticias como origen editorial revisado. El sistema transcribe, estructura y prepara la nota; las fuentes externas aportan contexto, contradicciones y comparación de tiempos.</p>
         </div>
         <Card className="instagram-account-card">
           <div className="instagram-account-heading">
@@ -237,7 +237,7 @@ export function InstagramEngine() {
           <Card className="instagram-next-card">
             <span className="eyebrow">SIGUIENTE ACCIÓN</span>
             <h2>{needsAction.length ? "Revisar una sola nota." : "La bandeja está al día."}</h2>
-            <p>{needsAction.length ? "No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram." : "Factomedia continuará procesando los nuevos Reels en cuanto aparezcan."}</p>
+            <p>{needsAction.length ? "No tienes que volver a verificar desde cero. Revisa que la transcripción y la nota respeten lo ya aprobado en Instagram." : "El Facto Noticias continuará procesando los nuevos Reels en cuanto aparezcan."}</p>
             {needsAction[0] ? <Link href={`/desk/noticias/sala?id=${needsAction[0].id}`} className="button button-primary">Continuar revisión <ArrowRight size={15} /></Link> : null}
           </Card>
 
