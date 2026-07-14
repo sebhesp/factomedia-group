@@ -24,6 +24,9 @@ jobs:
       - name: Validate El Facto Noticias branding
         run: node scripts/check-branding.mjs
 
+      - name: Validate production environment template
+        run: node scripts/check-production-readiness.mjs --template
+
   quality:
     needs: branding
     runs-on: ubuntu-latest
@@ -44,12 +47,28 @@ jobs:
         run: npm run typecheck
 
       - name: Lint
-        run: npm run lint
+        run: npm run lint 2>&1 | tee lint-report.txt
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-report.txt
+          if-no-files-found: ignore
 
       - name: Test
         run: npm test
 
       - name: Build static application
-        run: npm run build
+        run: npm run build 2>&1 | tee build-report.txt
         env:
           GITHUB_ACTIONS: "true"
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: build-report.txt
+          if-no-files-found: ignore

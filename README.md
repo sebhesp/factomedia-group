@@ -135,3 +135,15 @@ npm run test:e2e
 - Solo editoras, administradoras y dirección pueden aprobar o publicar.
 - El sitio público consume una proyección separada para evitar fugas de información interna.
 - La IA permanece como asistencia editable y no toma decisiones editoriales.
+
+
+## Activar Instagram real
+
+La ruta completa de activación está en [docs/ACTIVATE_PRODUCTION.md](docs/ACTIVATE_PRODUCTION.md). Antes de desplegar credenciales ejecuta:
+
+```bash
+npm run check:readiness:template
+npm run check:readiness
+```
+
+Después de desplegar Supabase, valida el diagnóstico con `npm run smoke:health` y ejecuta el primer ciclo controlado con `CONFIRM_PRODUCTION_SMOKE=YES npm run smoke:instagram`.

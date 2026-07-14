@@ -1,4 +1,4 @@
-project_id = "factomedia-group"
+project_id = "el-facto-noticias"
 
 [functions.instagram-sync]
 verify_jwt = false
@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.instagram-review]
 verify_jwt = true
+
+[functions.system-health]
+verify_jwt = false

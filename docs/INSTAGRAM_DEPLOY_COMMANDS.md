@@ -18,6 +18,7 @@ supabase functions deploy instagram-process
 supabase functions deploy instagram-compare-timing
 supabase functions deploy instagram-pipeline-tick
 supabase functions deploy instagram-review
+supabase functions deploy system-health
 ```
 
 ## 3. Configurar secretos
