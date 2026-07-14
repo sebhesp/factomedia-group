@@ -6,6 +6,7 @@ const corsHeaders = {
 };
 
 const DAY_MS = 86_400_000;
+const MINUTE_MS = 60_000;
 
 type InstagramMedia = {
   id: string;
@@ -24,9 +25,14 @@ type InstagramResponse = {
   error?: { message?: string; type?: string; code?: number };
 };
 
+type SyncMode = "auto" | "backfill" | "incremental";
+
 type SyncRequest = {
+  mode?: unknown;
+  initial_backfill_days?: unknown;
   backfill_days?: unknown;
   max_pages?: unknown;
+  overlap_minutes?: unknown;
 };
 
 function json(body: unknown, status = 200) {
@@ -46,6 +52,16 @@ function boundedInteger(value: unknown, fallback: number, minimum: number, maxim
   const parsed = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(parsed)) return fallback;
   return Math.min(maximum, Math.max(minimum, Math.trunc(parsed)));
+}
+
+function requestedMode(value: unknown): SyncMode {
+  return value === "backfill" || value === "incremental" ? value : "auto";
+}
+
+function timestampMs(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const parsed = new Date(value).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 async function authorize(request: Request, supabaseUrl: string, anonKey: string) {
@@ -97,10 +113,14 @@ Deno.serve(async (request) => {
     if (!caller) return json({ error: "Unauthorized" }, 401);
 
     const requestBody = (await request.json().catch(() => ({}))) as SyncRequest;
-    const backfillDays = boundedInteger(requestBody.backfill_days, 7, 1, 30);
-    const maxPages = boundedInteger(requestBody.max_pages, 20, 1, 50);
-    const cutoffMs = Date.now() - backfillDays * DAY_MS;
-    const cutoffIso = new Date(cutoffMs).toISOString();
+    const modeRequest = requestedMode(requestBody.mode);
+    const initialBackfillDays = boundedInteger(
+      requestBody.initial_backfill_days ?? requestBody.backfill_days,
+      7,
+      1,
+      30,
+    );
+    const overlapMinutes = boundedInteger(requestBody.overlap_minutes, 10, 1, 120);
 
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -121,6 +141,35 @@ Deno.serve(async (request) => {
       .single();
 
     if (accountError || !account) throw accountError ?? new Error("Could not create Instagram account");
+
+    const { data: latestKnown, error: latestKnownError } = await admin
+      .from("instagram_media")
+      .select("published_at")
+      .eq("account_id", account.id)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (latestKnownError) throw latestKnownError;
+
+    const lastSyncedMs = timestampMs(account.last_synced_at);
+    const latestKnownMs = timestampMs(latestKnown?.published_at);
+    const hasPriorState = lastSyncedMs !== null || latestKnownMs !== null;
+    const effectiveMode = modeRequest === "auto"
+      ? (hasPriorState ? "incremental" : "initial_backfill")
+      : modeRequest;
+
+    const referenceMs = Math.max(lastSyncedMs ?? 0, latestKnownMs ?? 0);
+    const cutoffMs = effectiveMode === "incremental" && referenceMs > 0
+      ? referenceMs - overlapMinutes * MINUTE_MS
+      : Date.now() - initialBackfillDays * DAY_MS;
+    const cutoffIso = new Date(cutoffMs).toISOString();
+    const maxPages = boundedInteger(
+      requestBody.max_pages,
+      effectiveMode === "incremental" ? 5 : 20,
+      1,
+      50,
+    );
 
     const fields = [
       "id",
@@ -196,7 +245,8 @@ Deno.serve(async (request) => {
             processing_status: existing ? undefined : "detected",
             metadata: {
               username: media.username ?? instagramUsername,
-              imported_with_backfill_days: backfillDays,
+              sync_mode: effectiveMode,
+              initial_backfill_days: effectiveMode === "incremental" ? undefined : initialBackfillDays,
             },
           },
           { onConflict: "instagram_media_id" },
@@ -220,7 +270,8 @@ Deno.serve(async (request) => {
           payload: {
             instagram_media_id: media.id,
             caller: caller.mode,
-            backfill_days: backfillDays,
+            sync_mode: effectiveMode,
+            initial_backfill_days: effectiveMode === "incremental" ? null : initialBackfillDays,
           },
         });
       } else {
@@ -228,11 +279,12 @@ Deno.serve(async (request) => {
       }
     }
 
+    const syncedAt = new Date().toISOString();
     await admin
       .from("instagram_accounts")
       .update({
         status: "connected",
-        last_synced_at: new Date().toISOString(),
+        last_synced_at: syncedAt,
         sync_cursor: nextUrl,
       })
       .eq("id", account.id);
@@ -240,7 +292,9 @@ Deno.serve(async (request) => {
     return json({
       ok: true,
       account: instagramUsername,
-      backfill_days: backfillDays,
+      sync_mode: effectiveMode,
+      initial_backfill_days: effectiveMode === "incremental" ? null : initialBackfillDays,
+      incremental_overlap_minutes: effectiveMode === "incremental" ? overlapMinutes : null,
       cutoff: cutoffIso,
       pages_fetched: pagesFetched,
       stopped_at_cutoff: stoppedAtCutoff,
@@ -248,7 +302,7 @@ Deno.serve(async (request) => {
       ignored_older: ignoredOlder,
       created,
       refreshed,
-      synced_at: new Date().toISOString(),
+      synced_at: syncedAt,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown sync error";
