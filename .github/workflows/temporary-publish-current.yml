@@ -34,10 +34,22 @@ jobs:
           GITHUB_ACTIONS: "true"
           CI: "true"
         run: |
-          npm run build
+          set -o pipefail
+          npm run build 2>&1 | tee static-build-report.txt
+          find out -maxdepth 4 -type f | sort > static-output-files.txt
           test -f out/index.html
           test -f out/instagram/index.html
           touch out/.nojekyll
+
+      - name: Upload static export diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-export-diagnostics
+          path: |
+            static-build-report.txt
+            static-output-files.txt
+          if-no-files-found: ignore
 
       - name: Publish gh-pages
         env:
@@ -46,7 +58,7 @@ jobs:
           cd out
           git init
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+users.noreply.github.com"
           git add --all
           git commit -m "Deploy Instagram copy workspace"
           git branch -M gh-pages
