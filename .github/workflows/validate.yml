@@ -18,6 +18,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Generate branding report
+        run: node scripts/check-branding.mjs > branding-report.txt 2>&1 || true
+
+      - name: Upload branding report
+        uses: actions/upload-artifact@v4
+        with:
+          name: branding-report
+          path: branding-report.txt
+          if-no-files-found: error
+
       - name: Validate El Facto Noticias branding
         run: node scripts/check-branding.mjs
 
