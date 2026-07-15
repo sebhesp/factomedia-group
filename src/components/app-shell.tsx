@@ -1,169 +1,139 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
-  Bell,
-  BrainCircuit,
-  ChevronRight,
-  CircleGauge,
-  FilePlus2,
   Camera as Instagram,
-  MoreHorizontal,
-  Newspaper,
-  Radio,
-  SearchCheck,
+  FileText,
+  Globe2,
+  LayoutDashboard,
   UserRound,
-  X,
   type LucideIcon,
 } from "lucide-react";
-import { CommandPalette } from "@/components/command-palette";
-import { FeedbackWidget } from "@/components/feedback-widget";
 import { cn } from "@/lib/utils";
 import { roleLabels, useDemoRole, type DemoRole } from "@/lib/demo-role";
 
 type NavigationLink = {
   href: string;
   label: string;
-  mobileLabel?: string;
+  description: string;
   icon: LucideIcon;
 };
 
 const links: readonly NavigationLink[] = [
-  { href: "/mi-dia", label: "Mi mesa", icon: CircleGauge },
-  { href: "/instagram", label: "Instagram", icon: Instagram },
-  { href: "/buscar-noticia", label: "Buscar noticia", mobileLabel: "Buscar", icon: SearchCheck },
-  { href: "/redaccion", label: "Ahora", icon: Radio },
-  { href: "/desk/noticias/nueva", label: "Capturar manualmente", mobileLabel: "Capturar", icon: FilePlus2 },
-  { href: "/distribucion", label: "Distribución", icon: BarChart3 },
-  { href: "/aprendizajes", label: "Aprendizajes", icon: BrainCircuit },
-  { href: "/", label: "Portada", icon: Newspaper },
+  {
+    href: "/mi-dia",
+    label: "Inicio",
+    description: "Resumen y pendientes",
+    icon: LayoutDashboard,
+  },
+  {
+    href: "/instagram",
+    label: "Instagram",
+    description: "Posts capturados",
+    icon: Instagram,
+  },
+  {
+    href: "/redaccion",
+    label: "Notas",
+    description: "Revisión editorial",
+    icon: FileText,
+  },
+  {
+    href: "/",
+    label: "Sitio público",
+    description: "Portada publicada",
+    icon: Globe2,
+  },
 ];
-
-const mobilePrimaryLinks = links.slice(0, 4);
-const mobileSecondaryLinks = links.slice(4);
-
-function mobileDescription(href: string) {
-  if (href === "/desk/noticias/nueva") return "Crear una historia fuera del flujo de Instagram";
-  if (href === "/distribucion") return "Posts, métricas y seguimiento";
-  if (href === "/aprendizajes") return "Fricciones, experimentos y mejoras";
-  return "Sitio público de El Facto Noticias";
-}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { role, setRole } = useDemoRole();
-  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
-  const mobileMoreOpenedAt = useRef(0);
-
-  useEffect(() => {
-    if (!mobileMoreOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMobileMoreOpen(false);
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [mobileMoreOpen]);
-
-  function openMobileMore() {
-    mobileMoreOpenedAt.current = Date.now();
-    setMobileMoreOpen(true);
-  }
-
-  function openMobileMoreFromTouch(event: React.TouchEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-    openMobileMore();
-  }
-
-  function openMobileMoreFromPointer(event: React.PointerEvent<HTMLButtonElement>) {
-    if (event.pointerType !== "touch") return;
-    event.preventDefault();
-    event.stopPropagation();
-    openMobileMore();
-  }
-
-  function closeMobileMoreFromBackdrop() {
-    if (Date.now() - mobileMoreOpenedAt.current < 350) return;
-    setMobileMoreOpen(false);
-  }
 
   function isActive(href: string) {
-    return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
+  const currentSection = links.find(({ href }) => isActive(href)) ?? links[0];
+
   return (
-    <div className="desk-shell">
-      <aside className="sidebar">
-        <Link href="/mi-dia" className="brand brand-desk" data-track-event="navigation_used" data-track-id="nav-brand" data-track-destination="mi-dia">
+    <div className="desk-shell minimal-shell">
+      <aside className="sidebar minimal-sidebar">
+        <Link
+          href="/mi-dia"
+          className="brand brand-desk"
+          data-track-event="navigation_used"
+          data-track-id="nav-brand"
+          data-track-destination="mi-dia"
+        >
           <span className="brand-mark">F</span>
           <span className="brand-copy"><strong>EL FACTO</strong><small>NOTICIAS</small></span>
         </Link>
-        <span className="nav-section-label">MOTOR EDITORIAL</span>
-        <nav className="side-nav">
-          {links.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} className={cn("side-link", isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`nav-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
-              <Icon size={18} />{label}
+
+        <nav className="side-nav minimal-side-nav" aria-label="Navegación principal">
+          {links.map(({ href, label, description, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn("side-link minimal-side-link", isActive(href) && "active")}
+              aria-label={`${label}: ${description}`}
+              title={description}
+              data-track-event="navigation_used"
+              data-track-id={`nav-${href.replaceAll("/", "-") || "home"}`}
+              data-track-destination={href}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
             </Link>
           ))}
         </nav>
-        <div className="sidebar-hint"><span>⌘ K</span><p>Busca historias o ejecuta cualquier acción.</p></div>
-        <div className="sidebar-user"><div className="avatar"><UserRound size={18} /></div><div><strong>Ilse Reyes</strong><select aria-label="Rol DEMO" value={role} onChange={(event) => setRole(event.target.value as DemoRole)}><option value="collaborator">Colaboradora</option><option value="editor">Editora</option><option value="admin">Administradora</option></select><span>{roleLabels[role]} · DEMO</span></div></div>
+
+        <div className="sidebar-user minimal-sidebar-user">
+          <div className="avatar"><UserRound size={18} /></div>
+          <div>
+            <strong>Ilse Reyes</strong>
+            <select
+              aria-label="Rol DEMO"
+              value={role}
+              onChange={(event) => setRole(event.target.value as DemoRole)}
+            >
+              <option value="collaborator">Colaboradora</option>
+              <option value="editor">Editora</option>
+              <option value="admin">Administradora</option>
+            </select>
+            <span>{roleLabels[role]} · DEMO</span>
+          </div>
+        </div>
       </aside>
 
       <div className="desk-main">
-        <header className="desk-header">
-          <div className="desk-header-left"><span className="mobile-brand">El Facto Noticias</span><span className="workspace-status"><i /> Instagram conectado · DEMO</span></div>
-          <div className="desk-header-actions"><Link href="/instagram" className="radar-entry-button" data-track-event="navigation_used" data-track-id="header-instagram-engine" data-track-destination="instagram" data-track-surface="header"><Instagram size={15} /> Ver Reels</Link><CommandPalette /><button className="icon-button" aria-label="Notificaciones" data-track-event="navigation_used" data-track-id="notifications" data-track-destination="notifications"><Bell size={19} /><span className="notification-dot" /></button></div>
+        <header className="desk-header minimal-header">
+          <div className="desk-header-left">
+            <span className="mobile-brand">El Facto Noticias</span>
+            <strong className="current-section-label">{currentSection.label}</strong>
+          </div>
+          <span className="workspace-status"><i /> Instagram conectado · DEMO</span>
         </header>
 
         <main className="desk-content">{children}</main>
 
-        <nav className="mobile-nav" aria-label="Navegación principal">
-          {mobilePrimaryLinks.map(({ href, label, mobileLabel, icon: Icon }) => (
-            <Link key={href} href={href} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
-              <span className="mobile-nav-icon"><Icon size={21} /></span><span>{mobileLabel ?? label}</span>
+        <nav className="mobile-nav minimal-mobile-nav" aria-label="Navegación principal">
+          {links.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn(isActive(href) && "active")}
+              data-track-event="navigation_used"
+              data-track-id={`mobile-${href.replaceAll("/", "-") || "home"}`}
+              data-track-destination={href}
+            >
+              <span className="mobile-nav-icon"><Icon size={21} /></span>
+              <span>{label}</span>
             </Link>
           ))}
-          <button
-            type="button"
-            className={cn("mobile-more-button", mobileSecondaryLinks.some(({ href }) => isActive(href)) && "active")}
-            onPointerDown={openMobileMoreFromPointer}
-            onTouchEnd={openMobileMoreFromTouch}
-            onClick={openMobileMore}
-            aria-label="Abrir más secciones"
-            aria-expanded={mobileMoreOpen}
-            aria-controls="mobile-more-menu"
-          >
-            <span className="mobile-nav-icon"><MoreHorizontal size={21} /></span><span>Más</span>
-          </button>
         </nav>
-
-        {mobileMoreOpen && (
-          <div className="mobile-more-backdrop" role="presentation" onMouseDown={closeMobileMoreFromBackdrop} onTouchStart={closeMobileMoreFromBackdrop}>
-            <section id="mobile-more-menu" className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Más secciones" onMouseDown={(event) => event.stopPropagation()} onTouchStart={(event) => event.stopPropagation()}>
-              <div className="mobile-sheet-handle" />
-              <header><div><span>EL FACTO NOTICIAS</span><h2>Más herramientas</h2></div><button type="button" onClick={() => setMobileMoreOpen(false)} aria-label="Cerrar"><X size={20} /></button></header>
-              <nav>
-                {mobileSecondaryLinks.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} onClick={() => setMobileMoreOpen(false)} className={cn(isActive(href) && "active")} data-track-event="navigation_used" data-track-id={`mobile-more-${href.replaceAll("/", "-") || "home"}`} data-track-destination={href}>
-                    <span><Icon size={20} /></span><div><strong>{label}</strong><small>{mobileDescription(href)}</small></div><ChevronRight size={18} />
-                  </Link>
-                ))}
-              </nav>
-              <label className="mobile-role-control"><span>Vista de trabajo</span><select aria-label="Cambiar rol DEMO" value={role} onChange={(event) => setRole(event.target.value as DemoRole)}><option value="collaborator">Colaboradora</option><option value="editor">Editora</option><option value="admin">Administradora</option></select></label>
-            </section>
-          </div>
-        )}
-
-        <FeedbackWidget />
       </div>
     </div>
   );

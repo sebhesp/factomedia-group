@@ -1,0 +1,89 @@
+/* El Facto Noticias — essential navigation only */
+
+.minimal-shell {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.minimal-sidebar {
+  padding: 22px 14px 16px;
+}
+
+.minimal-sidebar .brand.brand-desk {
+  min-height: 54px;
+  padding: 2px 8px 20px;
+}
+
+.minimal-side-nav {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.minimal-side-link {
+  min-height: 48px;
+  padding: 0 13px;
+  border-radius: 12px;
+  font-size: 12px;
+  letter-spacing: -.01em;
+}
+
+.minimal-side-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minimal-side-link.active {
+  background: rgba(141, 197, 165, .14);
+  box-shadow: inset 0 0 0 1px rgba(150, 207, 171, .08);
+}
+
+.minimal-sidebar-user {
+  margin-top: auto;
+  padding: 15px 7px 2px;
+}
+
+.minimal-header {
+  height: 64px;
+  padding: 0 28px;
+}
+
+.current-section-label {
+  color: var(--workspace-ink);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+
+.minimal-header .workspace-status {
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .minimal-header {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .minimal-header .current-section-label,
+  .minimal-header .workspace-status {
+    display: none;
+  }
+
+  .minimal-mobile-nav {
+    grid-template-columns: repeat(4, 1fr);
+    padding-inline: 6px;
+  }
+
+  .minimal-mobile-nav a {
+    min-width: 0;
+    padding: 3px 2px;
+  }
+
+  .minimal-mobile-nav a > span:last-child {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
