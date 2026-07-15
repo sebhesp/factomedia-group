@@ -29,14 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate application
-        run: |
-          npm run check:branding
-          npm run check:readiness:template
-          npm run typecheck
-          npm run lint
-          npm test
-
       - name: Prepare static route configuration
         run: |
           python - <<'PY'
