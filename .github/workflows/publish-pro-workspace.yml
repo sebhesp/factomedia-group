@@ -1,0 +1,75 @@
+name: Publish professional El Facto workspace
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-professional-el-facto-workspace
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout professional workspace
+        uses: actions/checkout@v4
+        with:
+          ref: ops/publish-pro-workspace
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate application
+        run: |
+          npm run check:branding
+          npm run check:readiness:template
+          npm run typecheck
+          npm run lint
+          npm test
+
+      - name: Prepare static route configuration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/app/noticias/[slug]/page.tsx')
+          text = path.read_text()
+          expected = 'export const dynamicParams = true;'
+          if expected not in text:
+              raise SystemExit('Dynamic route marker not found')
+          path.write_text(text.replace(expected, 'export const dynamicParams = false;', 1))
+          PY
+
+      - name: Build professional workspace
+        env:
+          GITHUB_ACTIONS: "true"
+          CI: "true"
+        run: |
+          npm run build
+          test -f out/index.html
+          test -f out/mi-dia/index.html
+          test -f out/instagram/index.html
+          touch out/.nojekyll
+
+      - name: Publish gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd out
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Deploy professional El Facto workspace"
+          git branch -M gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
