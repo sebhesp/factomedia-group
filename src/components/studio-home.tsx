@@ -81,7 +81,7 @@ export function StudioHome() {
     setNotice(null);
 
     if (snapshot.mode === "demo") {
-      await new Promise((resolve) => window.setTimeout(resolve, 650));
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 650));
       setSnapshot((current) => ({
         ...current,
         counts: {
@@ -130,8 +130,14 @@ export function StudioHome() {
   const reviewHref = priority?.stage === "review" || priority?.stage === "ready"
     ? priority.href
     : "/instagram?estado=review";
-  const issueCount = snapshot.system.issueCount;
-  const systemHealthy = issueCount === 0 && snapshot.system.accountStatus === "connected";
+  const accountConnected = snapshot.system.accountStatus === "connected";
+  const repairableIssues = snapshot.system.failedJobs + snapshot.system.staleJobs;
+  const systemHealthy = accountConnected && repairableIssues === 0;
+  const systemHeadline = !accountConnected
+    ? "Instagram todavía no está conectado."
+    : systemHealthy
+      ? "El flujo está al día."
+      : `${repairableIssues} proceso${repairableIssues === 1 ? " necesita" : "s necesitan"} ayuda.`;
 
   return (
     <div className="clean-dashboard live-hub">
@@ -181,7 +187,7 @@ export function StudioHome() {
       <section className={`live-operations ${systemHealthy ? "healthy" : "attention"}`} aria-label="Control del sistema">
         <div className="live-operations-status">
           <span><Activity size={15} /> OPERACIÓN EN VIVO</span>
-          <h2>{systemHealthy ? "El flujo está al día." : `${issueCount} proceso${issueCount === 1 ? " necesita" : "s necesitan"} ayuda.`}</h2>
+          <h2>{systemHeadline}</h2>
           <p>
             {relativeSync(snapshot.system.lastSyncedAt)}
             {snapshot.system.failedJobs ? ` · ${snapshot.system.failedJobs} intento(s) fallido(s)` : ""}
@@ -189,7 +195,7 @@ export function StudioHome() {
           </p>
         </div>
         <div className="live-operations-actions">
-          {!systemHealthy ? (
+          {repairableIssues > 0 ? (
             <button type="button" className="repair-action" onClick={() => void runOperation("repair_queue")} disabled={Boolean(runningAction)}>
               {runningAction === "repair_queue" ? <LoaderCircle size={15} className="spin" /> : <Wrench size={15} />}
               {runningAction === "repair_queue" ? "Reparando" : "Reparar automáticamente"}
@@ -197,7 +203,7 @@ export function StudioHome() {
           ) : null}
           <button type="button" className="cycle-action" onClick={() => void runOperation("run_cycle")} disabled={Boolean(runningAction)}>
             {runningAction === "run_cycle" ? <LoaderCircle size={15} className="spin" /> : <RefreshCw size={15} />}
-            {runningAction === "run_cycle" ? "Ejecutando ciclo" : "Actualizar y avanzar"}
+            {runningAction === "run_cycle" ? "Ejecutando ciclo" : accountConnected ? "Actualizar y avanzar" : "Comprobar conexión"}
           </button>
         </div>
       </section>
