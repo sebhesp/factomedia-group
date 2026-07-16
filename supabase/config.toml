@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.system-health]
 verify_jwt = false
+
+[functions.instagram-ops]
+verify_jwt = true

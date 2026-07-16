@@ -1,0 +1,202 @@
+.notes-hub {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+
+.notes-hub-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 0 4px;
+}
+
+.notes-hub-head > div > span {
+  color: var(--workspace-accent);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+
+.notes-hub-head h1 {
+  margin: 7px 0 8px;
+  color: var(--workspace-ink);
+  font: 560 clamp(42px, 5vw, 64px)/.98 var(--font-serif), serif;
+  letter-spacing: -.045em;
+}
+
+.notes-hub-head p {
+  margin: 0;
+  color: var(--workspace-muted);
+  font-size: 12px;
+}
+
+.notes-mode {
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--workspace-line);
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  color: var(--workspace-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.notes-mode i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--workspace-accent);
+  box-shadow: 0 0 0 4px rgba(31,102,69,.08);
+}
+
+.notes-tabs {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px;
+  border: 1px solid var(--workspace-line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.72);
+}
+
+.notes-tabs button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--workspace-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notes-tabs button b {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #edf0ec;
+  display: inline-grid;
+  place-items: center;
+  font-size: 8px;
+}
+
+.notes-tabs button.active {
+  background: var(--workspace-ink);
+  color: #fff;
+}
+
+.notes-tabs button.active b {
+  background: rgba(255,255,255,.14);
+  color: #fff;
+}
+
+.notes-list { border-top: 1px solid var(--workspace-line); }
+
+.notes-row {
+  min-height: 92px;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--workspace-line);
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 15px;
+  transition: background .16s ease, padding .16s ease;
+}
+
+.notes-row:hover {
+  padding-left: 10px;
+  padding-right: 10px;
+  background: rgba(255,255,255,.62);
+}
+
+.notes-row-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--workspace-warm-soft);
+  color: var(--workspace-warm);
+}
+
+.notes-row-icon.ready,
+.notes-row-icon.published {
+  background: var(--workspace-accent-soft);
+  color: var(--workspace-accent);
+}
+
+.notes-row > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.notes-row > div > span {
+  color: var(--workspace-accent);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: .1em;
+}
+
+.notes-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--workspace-ink);
+  font: 560 18px var(--font-serif), serif;
+}
+
+.notes-row small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--workspace-muted);
+  font-size: 9px;
+}
+
+.notes-row-action {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--workspace-line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--workspace-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.notes-empty {
+  min-height: 130px;
+  padding: 24px 4px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: var(--workspace-accent);
+}
+
+.notes-empty > div { display: grid; gap: 4px; }
+.notes-empty strong { color: var(--workspace-ink); font-size: 11px; }
+.notes-empty span { color: var(--workspace-muted); font-size: 9px; }
+
+@media (max-width: 680px) {
+  .notes-hub-head { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .notes-tabs { width: 100%; }
+  .notes-tabs button { flex: 1; justify-content: center; padding: 0 8px; }
+  .notes-row { grid-template-columns: 36px minmax(0, 1fr) 16px; }
+  .notes-row-action { min-width: 0; padding: 0; border: 0; background: transparent; }
+  .notes-row-action { font-size: 0; }
+}
