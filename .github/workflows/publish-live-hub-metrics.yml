@@ -1,0 +1,70 @@
+name: Publish final El Facto live hub
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-final-el-facto-live-hub
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout final live hub
+        uses: actions/checkout@v4
+        with:
+          ref: ops/publish-live-hub-metrics
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Prepare static route configuration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/app/noticias/[slug]/page.tsx')
+          text = path.read_text()
+          expected = 'export const dynamicParams = true;'
+          if expected not in text:
+              raise SystemExit('Dynamic route marker not found')
+          path.write_text(text.replace(expected, 'export const dynamicParams = false;', 1))
+          PY
+
+      - name: Build final live hub
+        env:
+          GITHUB_ACTIONS: "true"
+          CI: "true"
+        run: |
+          npm run build
+          test -f out/mi-dia/index.html
+          test -f out/redaccion/index.html
+          grep -q "Pendientes editoriales" out/mi-dia/index.html
+          grep -q "Pendientes automáticos" out/mi-dia/index.html
+          grep -q "OPERACIÓN EN VIVO" out/mi-dia/index.html
+          grep -q "FLUJO EDITORIAL" out/redaccion/index.html
+          touch out/.nojekyll
+
+      - name: Publish gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd out
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Deploy final El Facto live hub"
+          git branch -M gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
