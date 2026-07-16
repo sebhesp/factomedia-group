@@ -156,9 +156,9 @@ export function StudioHome() {
         <article className="actionable-metric human">
           <strong>{snapshot.counts.review}</strong>
           <div>
-            <span>Necesitan revisión</span>
-            <small>El cuello de botella humano</small>
-            <Link href={reviewHref}>Revisar siguiente <ArrowRight size={13} /></Link>
+            <span>Pendientes editoriales</span>
+            <small>Revisar o publicar ahora</small>
+            <Link href={reviewHref}>Resolver siguiente <ArrowRight size={13} /></Link>
           </div>
         </article>
 
