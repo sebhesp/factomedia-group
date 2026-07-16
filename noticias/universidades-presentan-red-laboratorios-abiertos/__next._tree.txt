@@ -1,0 +1,2 @@
+:HL["/factomedia-group/_next/static/chunks/3w_6yma25g07a.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"noticias","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"universidades-presentan-red-laboratorios-abiertos","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"ieZQQVO5OxIF_5uIC7MBn"}
