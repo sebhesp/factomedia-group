@@ -69,13 +69,10 @@ type AccountRow = {
 
 const processingStages = new Set<InstagramEngineStage>(["detected", "transcribing", "researching"]);
 
-function isToday(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return false;
-  const now = new Date();
-  return date.getFullYear() === now.getFullYear()
-    && date.getMonth() === now.getMonth()
-    && date.getDate() === now.getDate();
+function localDayStartIso() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  return start.toISOString();
 }
 
 function detailFor(item: InstagramEngineItem) {
@@ -170,7 +167,7 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
   const client = createClient();
   if (!client) return demoEditorialHubSnapshot();
 
-  const [accountResult, jobsResult] = await Promise.all([
+  const [accountResult, jobsResult, publishedResult] = await Promise.all([
     client
       .from("instagram_accounts")
       .select("status,last_synced_at")
@@ -182,6 +179,11 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
       .select("stage,locked_at")
       .order("updated_at", { ascending: false })
       .limit(100),
+    client
+      .from("instagram_story_drafts")
+      .select("id", { count: "exact", head: true })
+      .eq("editor_status", "published")
+      .gte("published_at", localDayStartIso()),
   ]);
 
   const account = accountResult.data as AccountRow | null;
@@ -208,7 +210,7 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
     counts: {
       review: engine.items.filter((item) => item.stage === "review" || item.stage === "ready").length,
       automatic: engine.items.filter((item) => processingStages.has(item.stage)).length + failedJobs,
-      publishedToday: engine.items.filter((item) => item.stage === "published" && isToday(item.publishedAt)).length,
+      publishedToday: publishedResult.count ?? 0,
     },
     priority: priorityItem ? toQueueItem(priorityItem) : null,
     queue,
