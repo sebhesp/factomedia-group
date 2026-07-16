@@ -60,7 +60,6 @@ export type EditorialHubOperationResult = {
 type JobRow = {
   stage: string;
   locked_at: string | null;
-  last_error_code: string | null;
 };
 
 type AccountRow = {
@@ -180,7 +179,7 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
       .maybeSingle(),
     client
       .from("instagram_pipeline_jobs")
-      .select("stage,locked_at,last_error_code")
+      .select("stage,locked_at")
       .order("updated_at", { ascending: false })
       .limit(100),
   ]);
@@ -193,7 +192,9 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
     const lockedAt = new Date(job.locked_at).getTime();
     return Number.isFinite(lockedAt) && lockedAt < staleBefore;
   }).length;
-  const failedJobs = jobs.filter((job) => job.stage === "failed_retryable" || Boolean(job.last_error_code)).length;
+  const failedJobs = jobs.filter((job) => job.stage === "failed_retryable").length;
+  const accountStatus = account?.status ?? "pending";
+  const accountIssue = accountStatus === "connected" ? 0 : 1;
 
   const operational = sortOperationally(engine.items.filter((item) => item.stage !== "published"));
   const queue = operational.slice(0, 5).map(toQueueItem);
@@ -212,11 +213,11 @@ export async function loadEditorialHubSnapshot(): Promise<EditorialHubSnapshot> 
     priority: priorityItem ? toQueueItem(priorityItem) : null,
     queue,
     system: {
-      accountStatus: account?.status ?? "pending",
+      accountStatus,
       lastSyncedAt: account?.last_synced_at ?? null,
       failedJobs,
       staleJobs,
-      issueCount: failedJobs + staleJobs,
+      issueCount: failedJobs + staleJobs + accountIssue,
     },
   };
 }
